@@ -1,0 +1,1793 @@
+﻿<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>mangoPicker Demo</title>
+  <link rel="icon" href="data:," />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="../dist/mangopicker.css?v=1.0.0" />
+  <style>
+    :root {
+      --demo-page-bg: #f6f1e8;
+      --demo-page-bg-soft: #fffaf2;
+      --demo-card-bg: rgba(255, 255, 255, 0.88);
+      --demo-card-border: rgba(148, 163, 184, 0.22);
+      --demo-text: #1f2937;
+      --demo-text-soft: #526071;
+      --demo-heading: #10203a;
+      --demo-accent: #0f766e;
+      --demo-accent-strong: #0c5f59;
+      --demo-accent-soft: #d7f3ef;
+      --demo-code-bg: #0f172a;
+      --demo-code-text: #e2e8f0;
+      --demo-shadow-lg: 0 24px 60px rgba(15, 23, 42, 0.12);
+      --demo-shadow-md: 0 14px 34px rgba(15, 23, 42, 0.08);
+      --demo-radius-xl: 1.75rem;
+      --demo-radius-lg: 1.375rem;
+      --demo-radius-md: 1rem;
+      --demo-radius-sm: 0.75rem;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: "Sarabun", var(--bs-body-font-family, sans-serif);
+      background:
+        radial-gradient(circle at top left, rgba(15, 118, 110, 0.14), transparent 28%),
+        radial-gradient(circle at top right, rgba(234, 179, 8, 0.12), transparent 24%),
+        linear-gradient(180deg, var(--demo-page-bg-soft) 0%, var(--demo-page-bg) 100%) !important;
+      color: var(--demo-text);
+    }
+
+    main.container.py-4.py-lg-5 {
+      max-width: 1260px;
+      padding-top: 1.75rem !important;
+      padding-bottom: 3.75rem !important;
+    }
+
+    main > section:first-child > div {
+      position: relative;
+      overflow: hidden;
+      border-color: rgba(255, 255, 255, 0.65) !important;
+      border-radius: var(--demo-radius-xl) !important;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.96) 0%, rgba(236, 253, 250, 0.92) 52%, rgba(255, 250, 240, 0.92) 100%) !important;
+      box-shadow: var(--demo-shadow-lg) !important;
+    }
+
+    main > section:first-child > div::after {
+      content: "";
+      position: absolute;
+      top: -6rem;
+      right: -3.5rem;
+      width: 16rem;
+      height: 16rem;
+      border-radius: 999px;
+      background: radial-gradient(circle, rgba(15, 118, 110, 0.16) 0%, transparent 68%);
+      pointer-events: none;
+    }
+
+    main > section:first-child .badge.text-bg-primary {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 0.875rem;
+      border-radius: 999px;
+      background: rgba(15, 118, 110, 0.09) !important;
+      color: var(--demo-accent-strong) !important;
+      border: 1px solid rgba(15, 118, 110, 0.12);
+      font-size: 0.8125rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    main > section:first-child h1 {
+      position: relative;
+      z-index: 1;
+      color: var(--demo-heading);
+      line-height: 1.08;
+    }
+
+    main > section:first-child .lead {
+      position: relative;
+      z-index: 1;
+      max-width: 48rem;
+      margin-bottom: 1.5rem !important;
+      color: var(--demo-text-soft) !important;
+      line-height: 1.72;
+    }
+
+    main > section:first-child .badge.text-bg-light.border {
+      position: relative;
+      z-index: 1;
+      display: inline-flex;
+      align-items: center;
+      padding: 0.625rem 0.875rem;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.74) !important;
+      color: var(--demo-heading) !important;
+      border-color: rgba(148, 163, 184, 0.24) !important;
+      font-weight: 600;
+    }
+
+    .row.g-4 {
+      --bs-gutter-x: 1.5rem;
+      --bs-gutter-y: 1.5rem;
+    }
+
+    .card.border-0.shadow-sm {
+      border: 1px solid var(--demo-card-border) !important;
+      border-radius: var(--demo-radius-lg);
+      background: var(--demo-card-bg);
+      box-shadow: var(--demo-shadow-md) !important;
+      backdrop-filter: blur(12px);
+    }
+
+    .card.border-0.shadow-sm .card-body {
+      padding: 1.5rem !important;
+    }
+
+    .card h2,
+    .card .h3,
+    .card .h4 {
+      color: var(--demo-heading);
+    }
+
+    .card .text-body-secondary,
+    .card p,
+    .list-group-item .text-body-secondary {
+      color: var(--demo-text-soft) !important;
+    }
+
+    .card .badge.text-bg-secondary {
+      background: rgba(15, 118, 110, 0.09) !important;
+      color: var(--demo-accent-strong) !important;
+      border: 1px solid rgba(15, 118, 110, 0.12);
+    }
+
+    .border.rounded-3.bg-body-tertiary {
+      border-color: rgba(148, 163, 184, 0.22) !important;
+      border-radius: var(--demo-radius-md) !important;
+      background: #fffdf8 !important;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    }
+
+    [data-code-panel] > .border.rounded-3 {
+      border-color: rgba(148, 163, 184, 0.22) !important;
+      border-radius: var(--demo-radius-md) !important;
+      overflow: hidden;
+      box-shadow: var(--demo-shadow-md);
+    }
+
+    [data-code-panel] .bg-dark {
+      background: var(--demo-code-bg) !important;
+      color: var(--demo-code-text) !important;
+    }
+
+    [data-code-panel] code {
+      color: var(--demo-code-text) !important;
+    }
+
+    .btn {
+      border-radius: 999px;
+      font-weight: 600;
+    }
+
+    .btn-primary {
+      background-color: var(--demo-accent);
+      border-color: var(--demo-accent);
+    }
+
+    .btn-primary:hover,
+    .btn-primary:focus,
+    .btn-primary:active {
+      background-color: var(--demo-accent-strong) !important;
+      border-color: var(--demo-accent-strong) !important;
+    }
+
+    .btn-outline-secondary,
+    .btn-outline-primary,
+    .btn-outline-danger {
+      background: rgba(255, 255, 255, 0.78);
+    }
+
+    .btn-outline-secondary {
+      color: #334155;
+      border-color: rgba(148, 163, 184, 0.38);
+    }
+
+    .btn-outline-secondary:hover {
+      background: rgba(215, 243, 239, 0.88);
+      border-color: rgba(15, 118, 110, 0.28);
+      color: var(--demo-heading);
+    }
+
+    .btn-outline-primary {
+      color: var(--demo-accent-strong);
+      border-color: rgba(15, 118, 110, 0.28);
+    }
+
+    .btn-outline-primary:hover {
+      background: rgba(15, 118, 110, 0.09);
+      color: var(--demo-accent-strong);
+      border-color: rgba(15, 118, 110, 0.36);
+    }
+
+    .form-label {
+      color: var(--demo-heading);
+      font-weight: 600;
+    }
+
+    .form-control {
+      min-height: 3rem;
+      border-radius: 0.9rem;
+      border-color: rgba(148, 163, 184, 0.34);
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    }
+
+    .form-control:focus {
+      border-color: rgba(15, 118, 110, 0.38);
+      box-shadow: 0 0 0 0.25rem rgba(15, 118, 110, 0.12);
+    }
+
+    .list-group-item,
+    .alert {
+      border-color: rgba(148, 163, 184, 0.22);
+      background: rgba(255, 255, 255, 0.82);
+    }
+
+    .font-monospace,
+    code,
+    pre {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    @media (max-width: 767.98px) {
+      main.container.py-4.py-lg-5 {
+        padding-top: 1.25rem !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-body-tertiary">
+  <main class="container py-4 py-lg-5">
+    <section class="mb-4">
+      <div class="bg-white border rounded-4 shadow-sm p-4 p-lg-5">
+        <span class="badge rounded-pill text-bg-primary mb-3">mangoPicker Demo</span>
+        <h1 class="display-5 fw-semibold mb-3">Date, Time, พ.ศ., Range, Inline</h1>
+        <p class="lead text-body-secondary mb-3">
+          หน้านี้รวมตัวอย่างใช้งานหลักของ <code>mangoPicker</code> แบบพร้อมใช้งานจริงจากไฟล์ build ใน <code>../dist</code>
+          รองรับทั้งการ init ด้วย JavaScript options และตั้งค่าจาก HTML ผ่าน <code>data-mangopicker-*</code>
+          ทุกตัวอย่างมี live preview และมีโค้ดซ่อนไว้ก่อน กด <strong>แสดงโค้ด</strong> แล้วจึงคัดลอกไปใช้ต่อได้ทันที
+        </p>
+        <div class="d-flex flex-wrap gap-2">
+          <span class="badge rounded-pill text-bg-light border">ใช้ไฟล์จริงจาก <code>dist/mangopicker.js</code></span>
+          <span class="badge rounded-pill text-bg-light border">ภาษาไทยจาก <code>dist/i18n/th.js</code></span>
+          <span class="badge rounded-pill text-bg-light border">รองรับ <code>data-mangopicker-*</code></span>
+          <span class="badge rounded-pill text-bg-light border">หน้า demo ใช้ Bootstrap 5 เป็นฐาน</span>
+          <span class="badge rounded-pill text-bg-light border">License: MIT</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="row g-4">
+      <article class="col-12">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3">
+              <div>
+                <span class="badge rounded-pill text-bg-secondary mb-2">Boilerplate</span>
+                <h2 class="h3 mb-2">ชุดเริ่มต้นที่คัดลอกไปใช้ได้ทั้งหน้า</h2>
+                <p class="text-body-secondary mb-0">
+                  ถ้าจะเริ่มจากศูนย์ ให้คัดลอกชุดนี้ก่อน แล้วค่อยเลือก snippet ของแต่ละเคสด้านล่างไปใส่เพิ่ม
+                </p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm js-toggle-code" data-code-id="code-boilerplate">แสดงโค้ด</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm js-copy-code" data-code-id="code-boilerplate" disabled>คัดลอกโค้ด</button>
+              </div>
+            </div>
+            <div class="border rounded-3 bg-body-tertiary p-3">
+              <p class="small text-body-secondary mb-0">
+                จุดนี้ไม่ใช่ live picker แต่เป็น snippet เต็มที่มี <code>link</code>, <code>script</code>, และตัวอย่าง init พร้อมใช้งาน
+                ถ้าไฟล์ของคุณไม่ได้อยู่ในโฟลเดอร์ <code>demo/</code> ให้ปรับ path ของ <code>dist</code> ตามตำแหน่งจริง
+              </p>
+            </div>
+            <div class="mt-3 d-none" data-code-panel="code-boilerplate">
+              <div class="border rounded-3 overflow-hidden">
+                <div class="bg-dark text-light p-3 overflow-auto">
+                  <pre class="mb-0"><code class="small text-light font-monospace"></code></pre>
+                </div>
+              </div>
+            </div>
+            <textarea id="code-boilerplate" hidden>
+              <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
+              <link rel="stylesheet" href="../dist/mangopicker.css" />
+
+              <input type="text" class="form-control example" name="example_date" />
+
+              <script src="../dist/mangopicker.js"></script>
+              <script src="../dist/i18n/th.js"></script>
+              <script>
+                window.mangoPicker.init({
+                  selector: ".example",
+                  language: "th",
+                  format: "Y-m-d",
+                  on_open: function (detail) {
+                    console.log("open", detail.value);
+                  },
+                  on_close: function (detail) {
+                    console.log("close", detail.value);
+                  },
+                  on_select: function (detail) {
+                    console.log("select", detail.display_value);
+                  },
+                  on_change: function (detail) {
+                    console.log("change", detail.value);
+                  }
+                });
+              </script>
+            </textarea>
+          </div>
+        </div>
+      </article>
+
+      <article class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3">
+              <div>
+                <span class="badge rounded-pill text-bg-secondary mb-2">Date Range</span>
+                <h2 class="h4 mb-2">เลือกเป็นช่วงวันที่</h2>
+                <p class="text-body-secondary mb-0">เปิด <code>range: true</code> เพื่อให้คลิกวันเริ่มและวันสิ้นสุดใน input เดียว</p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm js-toggle-code" data-code-id="code-date-range">แสดงโค้ด</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm js-copy-code" data-code-id="code-date-range" disabled>คัดลอกโค้ด</button>
+              </div>
+            </div>
+            <div class="border rounded-3 bg-body-tertiary p-3 d-grid gap-3">
+              <div>
+                <label for="demo-date-range" class="form-label fw-semibold">ช่วงวันเดินทาง</label>
+                <input type="text" id="demo-date-range" class="form-control" placeholder="คลิกวันเริ่ม แล้วคลิกวันสิ้นสุด" />
+              </div>
+              <p class="small text-body-secondary mb-0">ตัวอย่างนี้ใช้ <code>range_separator: " ถึง "</code> และเมื่อเลือกครบจะเก็บค่าใน input เป็นวันเริ่มถึงวันสิ้นสุด</p>
+            </div>
+            <div class="mt-3 d-none" data-code-panel="code-date-range">
+              <div class="border rounded-3 overflow-hidden">
+                <div class="bg-dark text-light p-3 overflow-auto">
+                  <pre class="mb-0"><code class="small text-light font-monospace"></code></pre>
+                </div>
+              </div>
+            </div>
+            <textarea id="code-date-range" hidden>
+              <input type="text" class="form-control travel-range" name="travel_range" />
+
+              <script>
+                window.mangoPicker.init({
+                  selector: ".travel-range",
+                  language: "th",
+                  format: "Y-m-d",
+                  range: true,
+                  range_separator: " ถึง "
+                });
+              </script>
+            </textarea>
+          </div>
+        </div>
+      </article>
+
+      <article class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3">
+              <div>
+                <span class="badge rounded-pill text-bg-secondary mb-2">12h + Seconds</span>
+                <h2 class="h4 mb-2">เวลาแบบ AM/PM พร้อมวินาที</h2>
+                <p class="text-body-secondary mb-0">ใช้ <code>format: "h:i:s A"</code> เมื่อต้องการเวลาแบบ 12 ชั่วโมง</p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm js-toggle-code" data-code-id="code-time-12h">แสดงโค้ด</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm js-copy-code" data-code-id="code-time-12h" disabled>คัดลอกโค้ด</button>
+              </div>
+            </div>
+            <div class="border rounded-3 bg-body-tertiary p-3 d-grid gap-3">
+              <div>
+                <label for="demo-time-12h" class="form-label fw-semibold">เวลานัดบริการ</label>
+                <input type="text" id="demo-time-12h" class="form-control" placeholder="h:i:s A" />
+              </div>
+              <p class="small text-body-secondary mb-0">ตัวอย่างนี้กำหนดนาทีทีละ 15 นาที และวินาทีทีละ 10 วินาที</p>
+            </div>
+            <div class="mt-3 d-none" data-code-panel="code-time-12h">
+              <div class="border rounded-3 overflow-hidden">
+                <div class="bg-dark text-light p-3 overflow-auto">
+                  <pre class="mb-0"><code class="small text-light font-monospace"></code></pre>
+                </div>
+              </div>
+            </div>
+            <textarea id="code-time-12h" hidden>
+              <input type="text" class="form-control service-time" name="service_time" />
+
+              <script>
+                window.mangoPicker.init({
+                  selector: ".service-time",
+                  format: "h:i:s A",
+                  minute_step: 15,
+                  second_step: 10
+                });
+              </script>
+            </textarea>
+          </div>
+        </div>
+      </article>
+
+      <article class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3">
+              <div>
+                <span class="badge rounded-pill text-bg-secondary mb-2">Time Range</span>
+                <h2 class="h4 mb-2">เลือกช่วงเวลา</h2>
+                <p class="text-body-secondary mb-0">ใช้ <code>range: true</code> กับ format เฉพาะเวลาได้เหมือนช่วงวันที่</p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm js-toggle-code" data-code-id="code-time-range">แสดงโค้ด</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm js-copy-code" data-code-id="code-time-range" disabled>คัดลอกโค้ด</button>
+              </div>
+            </div>
+            <div class="border rounded-3 bg-body-tertiary p-3 d-grid gap-3">
+              <div>
+                <label for="demo-time-range" class="form-label fw-semibold">ช่วงเวลาเปิดให้จอง</label>
+                <input type="text" id="demo-time-range" class="form-control" placeholder="เลือกเวลาเริ่ม แล้วเลือกเวลาสิ้นสุด" />
+              </div>
+              <p class="small text-body-secondary mb-0">เหมาะกับการตั้งช่วงเวลาเปิดร้าน, ช่วงรับนัด, หรือช่วงส่งสินค้า</p>
+            </div>
+            <div class="mt-3 d-none" data-code-panel="code-time-range">
+              <div class="border rounded-3 overflow-hidden">
+                <div class="bg-dark text-light p-3 overflow-auto">
+                  <pre class="mb-0"><code class="small text-light font-monospace"></code></pre>
+                </div>
+              </div>
+            </div>
+            <textarea id="code-time-range" hidden>
+              <input type="text" class="form-control working-hours" name="working_hours" />
+
+              <script>
+                window.mangoPicker.init({
+                  selector: ".working-hours",
+                  format: "H:i",
+                  range: true,
+                  range_separator: " - ",
+                  minute_step: 30
+                });
+              </script>
+            </textarea>
+          </div>
+        </div>
+      </article>
+
+      <article class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3">
+              <div>
+                <span class="badge rounded-pill text-bg-secondary mb-2">Date</span>
+                <h2 class="h4 mb-2">เลือกวันพื้นฐาน</h2>
+                <p class="text-body-secondary mb-0">เหมาะกับฟอร์มทั่วไปที่ต้องการเก็บค่าแบบ <code>Y-m-d</code></p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm js-toggle-code" data-code-id="code-basic-date">แสดงโค้ด</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm js-copy-code" data-code-id="code-basic-date" disabled>คัดลอกโค้ด</button>
+              </div>
+            </div>
+            <div class="border rounded-3 bg-body-tertiary p-3 d-grid gap-3">
+              <div>
+                <label for="demo-basic-date" class="form-label fw-semibold">วันที่นัดหมาย</label>
+                <input type="text" id="demo-basic-date" class="form-control" placeholder="คลิกเพื่อเลือกวันที่" />
+              </div>
+              <p class="small text-body-secondary mb-0">ตัวอย่างนี้ใช้ภาษาไทย และเก็บค่าลง input เป็น ค.ศ. ตาม format ที่กำหนด</p>
+            </div>
+            <div class="mt-3 d-none" data-code-panel="code-basic-date">
+              <div class="border rounded-3 overflow-hidden">
+                <div class="bg-dark text-light p-3 overflow-auto">
+                  <pre class="mb-0"><code class="small text-light font-monospace"></code></pre>
+                </div>
+              </div>
+            </div>
+            <textarea id="code-basic-date" hidden>
+              <input type="text" class="form-control basic-date" name="appointment_date" />
+
+              <script>
+                window.mangoPicker.init({
+                  selector: ".basic-date",
+                  language: "th",
+                  format: "Y-m-d"
+                });
+              </script>
+            </textarea>
+          </div>
+        </div>
+      </article>
+
+      <article class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3">
+              <div>
+                <span class="badge rounded-pill text-bg-secondary mb-2">Buddhist</span>
+                <h2 class="h4 mb-2">แสดงปีแบบ พ.ศ. แต่เก็บค่า ค.ศ.</h2>
+                <p class="text-body-secondary mb-0">
+                  เปิด <code>buddha: true</code> เพื่อให้ผู้ใช้เห็นปีแบบ พ.ศ. โดย input เดิมยังเก็บค่าเป็น ค.ศ.
+                </p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm js-toggle-code" data-code-id="code-buddhist">แสดงโค้ด</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm js-copy-code" data-code-id="code-buddhist" disabled>คัดลอกโค้ด</button>
+              </div>
+            </div>
+            <div class="border rounded-3 bg-body-tertiary p-3 d-grid gap-3">
+              <div>
+                <label for="demo-buddhist-date" class="form-label fw-semibold">วันเกิด</label>
+                <input type="text" id="demo-buddhist-date" class="form-control" placeholder="พ.ศ. ที่เห็น จะแปลงเก็บเป็น ค.ศ." />
+              </div>
+              <p class="small text-body-secondary mb-0">เปิด devtools หรือ submit ฟอร์มเพื่อดูว่าค่าใน input เดิมยังเป็น <code>YYYY-MM-DD</code></p>
+            </div>
+            <div class="mt-3 d-none" data-code-panel="code-buddhist">
+              <div class="border rounded-3 overflow-hidden">
+                <div class="bg-dark text-light p-3 overflow-auto">
+                  <pre class="mb-0"><code class="small text-light font-monospace"></code></pre>
+                </div>
+              </div>
+            </div>
+            <textarea id="code-buddhist" hidden>
+              <input type="text" class="form-control birthday" name="birthday" />
+
+              <script>
+                window.mangoPicker.init({
+                  selector: ".birthday",
+                  language: "th",
+                  format: "Y-m-d",
+                  buddha: true
+                });
+              </script>
+            </textarea>
+          </div>
+        </div>
+      </article>
+
+      <article class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3">
+              <div>
+                <span class="badge rounded-pill text-bg-secondary mb-2">Datetime</span>
+                <h2 class="h4 mb-2">เลือกวันและเวลา</h2>
+                <p class="text-body-secondary mb-0">ใช้ <code>format: "Y-m-d H:i"</code> เพื่อแสดง calendar และ time panel พร้อมกัน</p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm js-toggle-code" data-code-id="code-datetime">แสดงโค้ด</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm js-copy-code" data-code-id="code-datetime" disabled>คัดลอกโค้ด</button>
+              </div>
+            </div>
+            <div class="border rounded-3 bg-body-tertiary p-3 d-grid gap-3">
+              <div>
+                <label for="demo-datetime" class="form-label fw-semibold">วันเวลาเริ่มงาน</label>
+                <input type="text" id="demo-datetime" class="form-control" placeholder="Y-m-d H:i" />
+              </div>
+              <p class="small text-body-secondary mb-0">รายการนาทีแสดงครบตั้งแต่ <code>00</code> ถึง <code>59</code> เพื่อให้เลือกเวลาได้ละเอียดทุกนาที</p>
+            </div>
+            <div class="mt-3 d-none" data-code-panel="code-datetime">
+              <div class="border rounded-3 overflow-hidden">
+                <div class="bg-dark text-light p-3 overflow-auto">
+                  <pre class="mb-0"><code class="small text-light font-monospace"></code></pre>
+                </div>
+              </div>
+            </div>
+            <textarea id="code-datetime" hidden>
+              <input type="text" class="form-control meeting-at" name="meeting_at" />
+
+              <script>
+                window.mangoPicker.init({
+                  selector: ".meeting-at",
+                  language: "th",
+                  format: "Y-m-d H:i"
+                });
+              </script>
+            </textarea>
+          </div>
+        </div>
+      </article>
+
+      <article class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3">
+              <div>
+                <span class="badge rounded-pill text-bg-secondary mb-2">Time</span>
+                <h2 class="h4 mb-2">เลือกเฉพาะเวลา</h2>
+                <p class="text-body-secondary mb-0">ถ้า format เป็น <code>H:i</code> จะเหลือเฉพาะ time picker</p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm js-toggle-code" data-code-id="code-time-only">แสดงโค้ด</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm js-copy-code" data-code-id="code-time-only" disabled>คัดลอกโค้ด</button>
+              </div>
+            </div>
+            <div class="border rounded-3 bg-body-tertiary p-3 d-grid gap-3">
+              <div>
+                <label for="demo-time-only" class="form-label fw-semibold">เวลาเปิดร้าน</label>
+                <input type="text" id="demo-time-only" class="form-control" placeholder="H:i" />
+              </div>
+              <p class="small text-body-secondary mb-0">เหมาะกับ use case เวลาเปิด-ปิด, เวลานัด, หรือ slot เฉพาะเวลา</p>
+            </div>
+            <div class="mt-3 d-none" data-code-panel="code-time-only">
+              <div class="border rounded-3 overflow-hidden">
+                <div class="bg-dark text-light p-3 overflow-auto">
+                  <pre class="mb-0"><code class="small text-light font-monospace"></code></pre>
+                </div>
+              </div>
+            </div>
+            <textarea id="code-time-only" hidden>
+              <input type="text" class="form-control open-time" name="open_time" />
+
+              <script>
+                window.mangoPicker.init({
+                  selector: ".open-time",
+                  format: "H:i",
+                  hour_step: 2,
+                  minute_step: 15
+                });
+              </script>
+            </textarea>
+          </div>
+        </div>
+      </article>
+
+      <article class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3">
+              <div>
+                <span class="badge rounded-pill text-bg-secondary mb-2">Month</span>
+                <h2 class="h4 mb-2">เลือกเฉพาะปีและเดือน</h2>
+                <p class="text-body-secondary mb-0">ถ้ากำหนด <code>format: "Y-m"</code> จะเลือกได้แค่ปีและเดือน</p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm js-toggle-code" data-code-id="code-month-only">แสดงโค้ด</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm js-copy-code" data-code-id="code-month-only" disabled>คัดลอกโค้ด</button>
+              </div>
+            </div>
+            <div class="border rounded-3 bg-body-tertiary p-3 d-grid gap-3">
+              <div>
+                <label for="demo-month-only" class="form-label fw-semibold">รอบบัญชี</label>
+                <input type="text" id="demo-month-only" class="form-control" placeholder="Y-m" />
+              </div>
+              <p class="small text-body-secondary mb-0">ตัวอย่างนี้เปิด พ.ศ. ด้วย เพื่อให้เห็นการทำงานร่วมกันของ month picker และ Buddhist year</p>
+            </div>
+            <div class="mt-3 d-none" data-code-panel="code-month-only">
+              <div class="border rounded-3 overflow-hidden">
+                <div class="bg-dark text-light p-3 overflow-auto">
+                  <pre class="mb-0"><code class="small text-light font-monospace"></code></pre>
+                </div>
+              </div>
+            </div>
+            <textarea id="code-month-only" hidden>
+              <input type="text" class="form-control billing-month" name="billing_month" />
+
+              <script>
+                window.mangoPicker.init({
+                  selector: ".billing-month",
+                  language: "th",
+                  format: "Y-m",
+                  buddha: true
+                });
+              </script>
+            </textarea>
+          </div>
+        </div>
+      </article>
+
+      <article class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3">
+              <div>
+                <span class="badge rounded-pill text-bg-secondary mb-2">Year</span>
+                <h2 class="h4 mb-2">เลือกเฉพาะปี</h2>
+                <p class="text-body-secondary mb-0">ถ้ากำหนด <code>format: "Y"</code> จะเข้าโหมดเลือกปีโดยตรง</p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm js-toggle-code" data-code-id="code-year-only">แสดงโค้ด</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm js-copy-code" data-code-id="code-year-only" disabled>คัดลอกโค้ด</button>
+              </div>
+            </div>
+            <div class="border rounded-3 bg-body-tertiary p-3 d-grid gap-3">
+              <div>
+                <label for="demo-year-only" class="form-label fw-semibold">ปีงบประมาณ</label>
+                <input type="text" id="demo-year-only" class="form-control" placeholder="Y" />
+              </div>
+              <p class="small text-body-secondary mb-0">เหมาะกับรายงานสรุป, ปีงบ, หรือ filter ที่ต้องการแค่ปีเดียว</p>
+            </div>
+            <div class="mt-3 d-none" data-code-panel="code-year-only">
+              <div class="border rounded-3 overflow-hidden">
+                <div class="bg-dark text-light p-3 overflow-auto">
+                  <pre class="mb-0"><code class="small text-light font-monospace"></code></pre>
+                </div>
+              </div>
+            </div>
+            <textarea id="code-year-only" hidden>
+              <input type="text" class="form-control fiscal-year" name="fiscal_year" />
+
+              <script>
+                window.mangoPicker.init({
+                  selector: ".fiscal-year",
+                  language: "th",
+                  format: "Y",
+                  buddha: true
+                });
+              </script>
+            </textarea>
+          </div>
+        </div>
+      </article>
+
+      <article class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3">
+              <div>
+                <span class="badge rounded-pill text-bg-secondary mb-2">Limits</span>
+                <h2 class="h4 mb-2">กำหนดช่วงวัน และปิดเสาร์อาทิตย์</h2>
+                <p class="text-body-secondary mb-0">ใช้ <code>min_date</code>, <code>max_date</code> และ <code>disabled_weekdays</code> ได้พร้อมกัน</p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm js-toggle-code" data-code-id="code-range-limit">แสดงโค้ด</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm js-copy-code" data-code-id="code-range-limit" disabled>คัดลอกโค้ด</button>
+              </div>
+            </div>
+            <div class="border rounded-3 bg-body-tertiary p-3 d-grid gap-3">
+              <div>
+                <label for="demo-range-limit" class="form-label fw-semibold">วันเข้ารับบริการ</label>
+                <input type="text" id="demo-range-limit" class="form-control" placeholder="เลือกได้เฉพาะวันทำการในปี 2026" />
+              </div>
+              <p class="small text-body-secondary mb-0">ตัวอย่างนี้เลือกได้เฉพาะวันจันทร์ถึงศุกร์ ระหว่าง 2026-01-01 ถึง 2026-12-31</p>
+            </div>
+            <div class="mt-3 d-none" data-code-panel="code-range-limit">
+              <div class="border rounded-3 overflow-hidden">
+                <div class="bg-dark text-light p-3 overflow-auto">
+                  <pre class="mb-0"><code class="small text-light font-monospace"></code></pre>
+                </div>
+              </div>
+            </div>
+            <textarea id="code-range-limit" hidden>
+              <input type="text" class="form-control service-date" name="service_date" />
+
+              <script>
+                window.mangoPicker.init({
+                  selector: ".service-date",
+                  language: "th",
+                  format: "Y-m-d",
+                  min_date: "2026-01-01",
+                  max_date: "2026-12-31",
+                  disabled_weekdays: [0, 6]
+                });
+              </script>
+            </textarea>
+          </div>
+        </div>
+      </article>
+
+      <article class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3">
+              <div>
+                <span class="badge rounded-pill text-bg-secondary mb-2">Open / Close Rules</span>
+                <h2 class="h4 mb-2">ระบุวันเปิดและวันปิดแบบรายวันและเป็นช่วง</h2>
+                <p class="text-body-secondary mb-0">ผสม <code>enabled_ranges</code>, <code>disabled_dates</code> และ <code>disabled_ranges</code> ได้</p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm js-toggle-code" data-code-id="code-open-close-rules">แสดงโค้ด</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm js-copy-code" data-code-id="code-open-close-rules" disabled>คัดลอกโค้ด</button>
+              </div>
+            </div>
+            <div class="border rounded-3 bg-body-tertiary p-3 d-grid gap-3">
+              <div>
+                <label for="demo-open-close-rules" class="form-label fw-semibold">วันจองคิวพิเศษ</label>
+                <input type="text" id="demo-open-close-rules" class="form-control" placeholder="เปิดเฉพาะบางช่วง และปิดบางวัน" />
+              </div>
+              <p class="small text-body-secondary mb-0">ตัวอย่างนี้เปิดให้เลือกเฉพาะเดือนเมษายนทั้งเดือน และ 1-15 มิถุนายน แต่ปิดวันสงกรานต์กับช่วง 20-22 เมษายน</p>
+            </div>
+            <div class="mt-3 d-none" data-code-panel="code-open-close-rules">
+              <div class="border rounded-3 overflow-hidden">
+                <div class="bg-dark text-light p-3 overflow-auto">
+                  <pre class="mb-0"><code class="small text-light font-monospace"></code></pre>
+                </div>
+              </div>
+            </div>
+            <textarea id="code-open-close-rules" hidden>
+              <input type="text" class="form-control special-booking" name="special_booking" />
+
+              <script>
+                window.mangoPicker.init({
+                  selector: ".special-booking",
+                  language: "th",
+                  format: "Y-m-d",
+                  enabled_ranges: [
+                    { start: "2026-04-01", end: "2026-04-30" },
+                    { start: "2026-06-01", end: "2026-06-15" }
+                  ],
+                  disabled_dates: ["2026-04-13", "2026-04-14", "2026-04-15"],
+                  disabled_ranges: [
+                    { start: "2026-04-20", end: "2026-04-22" }
+                  ]
+                });
+              </script>
+            </textarea>
+          </div>
+        </div>
+      </article>
+
+      <article class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3">
+              <div>
+                <span class="badge rounded-pill text-bg-secondary mb-2">Function Rules</span>
+                <h2 class="h4 mb-2">กำหนดวันเปิดและวันปิดด้วย function</h2>
+                <p class="text-body-secondary mb-0">ใช้ <code>enabled_date</code> และ <code>disabled_date</code> เมื่อต้องการ business rule ที่ยืดหยุ่นกว่า list ปกติ</p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm js-toggle-code" data-code-id="code-function-rules">แสดงโค้ด</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm js-copy-code" data-code-id="code-function-rules" disabled>คัดลอกโค้ด</button>
+              </div>
+            </div>
+            <div class="border rounded-3 bg-body-tertiary p-3 d-grid gap-3">
+              <div>
+                <label for="demo-function-rules" class="form-label fw-semibold">รอบจัดส่ง</label>
+                <input type="text" id="demo-function-rules" class="form-control" placeholder="เลือกได้เฉพาะวันที่เป็นเลขคู่ แต่ปิดทุกวันพุธ" />
+              </div>
+              <p class="small text-body-secondary mb-0">ตัวอย่างนี้ช่วยอธิบายการทำงานของ whitelist + blacklist แบบ function ในเคสจริง</p>
+            </div>
+            <div class="mt-3 d-none" data-code-panel="code-function-rules">
+              <div class="border rounded-3 overflow-hidden">
+                <div class="bg-dark text-light p-3 overflow-auto">
+                  <pre class="mb-0"><code class="small text-light font-monospace"></code></pre>
+                </div>
+              </div>
+            </div>
+            <textarea id="code-function-rules" hidden>
+              <input type="text" class="form-control delivery-cycle" name="delivery_cycle" />
+
+              <script>
+                window.mangoPicker.init({
+                  selector: ".delivery-cycle",
+                  language: "th",
+                  format: "Y-m-d",
+                  enabled_date: function (candidate_date) {
+                    return candidate_date.getDate() % 2 === 0;
+                  },
+                  disabled_date: function (candidate_date) {
+                    return candidate_date.getDay() === 3;
+                  }
+                });
+              </script>
+            </textarea>
+          </div>
+        </div>
+      </article>
+
+      <article class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3">
+              <div>
+                <span class="badge rounded-pill text-bg-secondary mb-2">Multiple</span>
+                <h2 class="h4 mb-2">เลือกหลายวัน</h2>
+                <p class="text-body-secondary mb-0">เปิด <code>multiple: true</code> เพื่อให้ picker เก็บหลายค่า และกำหนด <code>multiple_separator</code> ได้</p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm js-toggle-code" data-code-id="code-multiple">แสดงโค้ด</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm js-copy-code" data-code-id="code-multiple" disabled>คัดลอกโค้ด</button>
+              </div>
+            </div>
+            <div class="border rounded-3 bg-body-tertiary p-3 d-grid gap-3">
+              <div>
+                <label for="demo-multiple" class="form-label fw-semibold">วันลาหยุด</label>
+                <input type="text" id="demo-multiple" class="form-control" placeholder="คลิกเลือกได้หลายวัน" />
+              </div>
+              <p class="small text-body-secondary mb-0">เลือกซ้ำวันเดิมอีกครั้งเพื่อยกเลิกวันนั้นได้</p>
+            </div>
+            <div class="mt-3 d-none" data-code-panel="code-multiple">
+              <div class="border rounded-3 overflow-hidden">
+                <div class="bg-dark text-light p-3 overflow-auto">
+                  <pre class="mb-0"><code class="small text-light font-monospace"></code></pre>
+                </div>
+              </div>
+            </div>
+            <textarea id="code-multiple" hidden>
+              <input type="text" class="form-control leave-dates" name="leave_dates" />
+
+              <script>
+                window.mangoPicker.init({
+                  selector: ".leave-dates",
+                  language: "th",
+                  format: "Y-m-d",
+                  multiple: true,
+                  multiple_separator: " | "
+                });
+              </script>
+            </textarea>
+          </div>
+        </div>
+      </article>
+
+      <article class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3">
+              <div>
+                <span class="badge rounded-pill text-bg-secondary mb-2">Inline</span>
+                <h2 class="h4 mb-2">แสดง picker แบบ inline</h2>
+                <p class="text-body-secondary mb-0">เปิด <code>inline: true</code> เมื่อต้องการให้ปฏิทินแสดงอยู่บนหน้าเสมอ</p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm js-toggle-code" data-code-id="code-inline">แสดงโค้ด</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm js-copy-code" data-code-id="code-inline" disabled>คัดลอกโค้ด</button>
+              </div>
+            </div>
+            <div class="border rounded-3 bg-body-tertiary p-3 d-grid gap-3">
+              <div>
+                <label for="demo-inline" class="form-label fw-semibold">เลือกวันที่แบบแสดงตลอด</label>
+                <input type="text" id="demo-inline" class="form-control" placeholder="picker จะแสดงใต้ input นี้" />
+              </div>
+              <p class="small text-body-secondary mb-0">ตัวอย่างนี้ตั้ง <code>week_start: 1</code> เพื่อให้สัปดาห์เริ่มวันจันทร์</p>
+            </div>
+            <div class="mt-3 d-none" data-code-panel="code-inline">
+              <div class="border rounded-3 overflow-hidden">
+                <div class="bg-dark text-light p-3 overflow-auto">
+                  <pre class="mb-0"><code class="small text-light font-monospace"></code></pre>
+                </div>
+              </div>
+            </div>
+            <textarea id="code-inline" hidden>
+              <input type="text" class="form-control inline-date" name="inline_date" />
+
+              <script>
+                window.mangoPicker.init({
+                  selector: ".inline-date",
+                  language: "th",
+                  format: "Y-m-d",
+                  inline: true,
+                  week_start: 1
+                });
+              </script>
+            </textarea>
+          </div>
+        </div>
+      </article>
+
+      <article class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3">
+              <div>
+                <span class="badge rounded-pill text-bg-secondary mb-2">Native Input</span>
+                <h2 class="h4 mb-2">ใช้กับ native input ได้</h2>
+                <p class="text-body-secondary mb-0">ถ้าไม่กำหนด <code>format</code> library จะเดาจาก <code>type</code> ของ input ให้</p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm js-toggle-code" data-code-id="code-native-input">แสดงโค้ด</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm js-copy-code" data-code-id="code-native-input" disabled>คัดลอกโค้ด</button>
+              </div>
+            </div>
+            <div class="border rounded-3 bg-body-tertiary p-3 d-grid gap-3">
+              <div>
+                <label for="demo-native-date" class="form-label fw-semibold">Native date</label>
+                <input type="date" id="demo-native-date" class="form-control" />
+              </div>
+              <div>
+                <label for="demo-native-time" class="form-label fw-semibold">Native time พร้อมวินาที</label>
+                <input type="time" id="demo-native-time" class="form-control" step="1" />
+              </div>
+              <p class="small text-body-secondary mb-0">ตัวอย่างนี้ไม่ต้องใส่ <code>format</code> เพราะอ่านจาก <code>type="date"</code> และ <code>type="time"</code></p>
+            </div>
+            <div class="mt-3 d-none" data-code-panel="code-native-input">
+              <div class="border rounded-3 overflow-hidden">
+                <div class="bg-dark text-light p-3 overflow-auto">
+                  <pre class="mb-0"><code class="small text-light font-monospace"></code></pre>
+                </div>
+              </div>
+            </div>
+            <textarea id="code-native-input" hidden>
+              <input type="date" class="form-control native-date" name="native_date" />
+              <input type="time" class="form-control native-time" name="native_time" step="1" />
+
+              <script>
+                window.mangoPicker.init({
+                  selector: ".native-date, .native-time",
+                  language: "th"
+                });
+              </script>
+            </textarea>
+          </div>
+        </div>
+      </article>
+
+      <article class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3">
+              <div>
+                <span class="badge rounded-pill text-bg-secondary mb-2">Data Attributes</span>
+                <h2 class="h4 mb-2">ตั้งค่าจาก HTML โดยตรง</h2>
+                <p class="text-body-secondary mb-0">ใช้ <code>data-mangopicker-*</code> เมื่ออยากให้ option อยู่กับ input และ init ด้วย selector สั้นๆ</p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm js-toggle-code" data-code-id="code-data-attributes">แสดงโค้ด</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm js-copy-code" data-code-id="code-data-attributes" disabled>คัดลอกโค้ด</button>
+              </div>
+            </div>
+            <div class="border rounded-3 bg-body-tertiary p-3 d-grid gap-3">
+              <div>
+                <label for="demo-data-attributes" class="form-label fw-semibold">วันจองล่วงหน้า</label>
+                <input
+                  type="text"
+                  id="demo-data-attributes"
+                  class="form-control"
+                  placeholder="ตั้งค่าด้วย data attributes"
+                  data-mangopicker-language="th"
+                  data-mangopicker-format="Y-m-d"
+                  data-mangopicker-buddha="true"
+                  data-mangopicker-disable-past="true"
+                  data-mangopicker-week-start="1"
+                  data-mangopicker-show-reset-button="true"
+                />
+              </div>
+              <p class="small text-body-secondary mb-0">ตัวอย่างนี้ตั้งภาษาไทย, พ.ศ., ปิดวันที่ผ่านมา, เริ่มสัปดาห์วันจันทร์ และแสดงปุ่ม reset จาก attribute ทั้งหมด</p>
+            </div>
+            <div class="mt-3 d-none" data-code-panel="code-data-attributes">
+              <div class="border rounded-3 overflow-hidden">
+                <div class="bg-dark text-light p-3 overflow-auto">
+                  <pre class="mb-0"><code class="small text-light font-monospace"></code></pre>
+                </div>
+              </div>
+            </div>
+            <textarea id="code-data-attributes" hidden>
+              <input
+                type="text"
+                class="form-control booking-date"
+                name="booking_date"
+                data-mangopicker-language="th"
+                data-mangopicker-format="Y-m-d"
+                data-mangopicker-buddha="true"
+                data-mangopicker-disable-past="true"
+                data-mangopicker-week-start="1"
+                data-mangopicker-show-reset-button="true"
+              />
+
+              <script>
+                window.mangoPicker.init({
+                  selector: ".booking-date"
+                });
+              </script>
+            </textarea>
+          </div>
+        </div>
+      </article>
+
+      <article class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3">
+              <div>
+                <span class="badge rounded-pill text-bg-secondary mb-2">Callbacks + Functions</span>
+                <h2 class="h4 mb-2">ใช้ callback และ rule function</h2>
+                <p class="text-body-secondary mb-0">ตัวอย่างนี้ใช้ function บน <code>window</code> ผ่าน data attributes เพื่อให้ HTML เรียก callback/rule ได้</p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm js-toggle-code" data-code-id="code-function-options">แสดงโค้ด</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm js-copy-code" data-code-id="code-function-options" disabled>คัดลอกโค้ด</button>
+              </div>
+            </div>
+            <div class="border rounded-3 bg-body-tertiary p-3 d-grid gap-3">
+              <div>
+                <label for="demo-function-options" class="form-label fw-semibold">วันรับสินค้า</label>
+                <input
+                  type="text"
+                  id="demo-function-options"
+                  class="form-control"
+                  placeholder="เลือกได้เฉพาะวันจันทร์-พฤหัสบดี"
+                  data-mangopicker-language="th"
+                  data-mangopicker-format="Y-m-d"
+                  data-mangopicker-enabled-date="demoMangoEnabledWeekday"
+                  data-mangopicker-disabled-date="demoMangoDisabledFriday"
+                  data-mangopicker-on-change="demoMangoFunctionOptionChange"
+                />
+              </div>
+              <div id="demo-function-options-result" class="alert alert-secondary small mb-0">ยังไม่ได้เลือกวันรับสินค้า</div>
+            </div>
+            <div class="mt-3 d-none" data-code-panel="code-function-options">
+              <div class="border rounded-3 overflow-hidden">
+                <div class="bg-dark text-light p-3 overflow-auto">
+                  <pre class="mb-0"><code class="small text-light font-monospace"></code></pre>
+                </div>
+              </div>
+            </div>
+            <textarea id="code-function-options" hidden>
+              <input
+                type="text"
+                class="form-control pickup-date"
+                name="pickup_date"
+                data-mangopicker-language="th"
+                data-mangopicker-format="Y-m-d"
+                data-mangopicker-enabled-date="allowMondayToFriday"
+                data-mangopicker-disabled-date="closeEveryFriday"
+                data-mangopicker-on-change="handlePickupDateChange"
+              />
+
+              <script>
+                window.allowMondayToFriday = function (candidate_date) {
+                  return candidate_date.getDay() >= 1 && candidate_date.getDay() <= 5;
+                };
+
+                window.closeEveryFriday = function (candidate_date) {
+                  return candidate_date.getDay() === 5;
+                };
+
+                window.handlePickupDateChange = function (detail) {
+                  console.log("pickup date changed:", detail.value);
+                };
+
+                window.mangoPicker.init({
+                  selector: ".pickup-date"
+                });
+              </script>
+            </textarea>
+          </div>
+        </div>
+      </article>
+
+      <article class="col-12">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3">
+              <div>
+                <span class="badge rounded-pill text-bg-secondary mb-2">Callbacks</span>
+                <h2 class="h3 mb-2">ดู callback ทำงานจริง</h2>
+                <p class="text-body-secondary mb-0">
+                  การ์ดนี้ต่อ callback ทั้ง <code>on_open</code>, <code>on_close</code>, <code>on_select</code>, <code>on_change</code>
+                  และแสดงผล event log ให้เห็นทันที
+                </p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm js-toggle-code" data-code-id="code-callbacks">แสดงโค้ด</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm js-copy-code" data-code-id="code-callbacks" disabled>คัดลอกโค้ด</button>
+              </div>
+            </div>
+            <div class="border rounded-3 bg-body-tertiary p-3">
+              <div class="row g-3">
+                <div class="col-12 col-lg-6">
+                  <label for="demo-callbacks" class="form-label fw-semibold">ทดสอบ callback</label>
+                  <input type="text" id="demo-callbacks" class="form-control mb-2" placeholder="ลองเปิด ปิด เลือกวันและเวลา" />
+                  <p class="small text-body-secondary mb-0">log ด้านขวาจะเพิ่มตามการใช้งานล่าสุด และเก็บค่าไว้ 8 รายการล่าสุด</p>
+                </div>
+                <div class="col-12 col-lg-6">
+                  <div id="demo-callback-log" class="list-group small">
+                    <div class="list-group-item">
+                      <strong>ยังไม่มี event</strong>
+                      <div class="text-body-secondary small">ลองคลิก input ด้านซ้ายเพื่อเริ่มทดสอบ callback</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-3 d-none" data-code-panel="code-callbacks">
+              <div class="border rounded-3 overflow-hidden">
+                <div class="bg-dark text-light p-3 overflow-auto">
+                  <pre class="mb-0"><code class="small text-light font-monospace"></code></pre>
+                </div>
+              </div>
+            </div>
+            <textarea id="code-callbacks" hidden>
+              <input type="text" class="form-control callback-demo" name="callback_demo" />
+
+              <script>
+                window.mangoPicker.init({
+                  selector: ".callback-demo",
+                  language: "th",
+                  format: "Y-m-d H:i",
+                  on_open: function (detail) {
+                    console.log("on_open", detail);
+                  },
+                  on_close: function (detail) {
+                    console.log("on_close", detail);
+                  },
+                  on_select: function (detail) {
+                    console.log("on_select", detail);
+                  },
+                  on_change: function (detail) {
+                    console.log("on_change", detail);
+                  }
+                });
+              </script>
+            </textarea>
+          </div>
+        </div>
+      </article>
+
+      <article class="col-12">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3">
+              <div>
+                <span class="badge rounded-pill text-bg-secondary mb-2">API</span>
+                <h2 class="h3 mb-2">เรียกใช้งานผ่าน manager API</h2>
+                <p class="text-body-secondary mb-0">
+                  ใช้ <code>open()</code>, <code>close()</code>, <code>set_value()</code>, <code>get_value()</code>, <code>clear()</code>, <code>reset()</code>
+                  ได้จาก object ที่ <code>init()</code> คืนกลับมา
+                </p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm js-toggle-code" data-code-id="code-api-controls">แสดงโค้ด</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm js-copy-code" data-code-id="code-api-controls" disabled>คัดลอกโค้ด</button>
+              </div>
+            </div>
+            <div class="border rounded-3 bg-body-tertiary p-3">
+              <div class="row g-3">
+                <div class="col-12 col-lg-6">
+                  <label for="demo-api" class="form-label fw-semibold">ช่องทดสอบ API</label>
+                  <input type="text" id="demo-api" class="form-control mb-3" placeholder="สั่งงานจากปุ่มด้านล่างได้" />
+                  <div class="d-flex flex-wrap gap-2">
+                    <button type="button" class="btn btn-primary btn-sm js-api-action" data-api-action="open">open()</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm js-api-action" data-api-action="close">close()</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm js-api-action" data-api-action="set_today">set_value(today)</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm js-api-action" data-api-action="get_value">get_value()</button>
+                    <button type="button" class="btn btn-outline-secondary btn-sm js-api-action" data-api-action="reset">reset()</button>
+                    <button type="button" class="btn btn-outline-danger btn-sm js-api-action" data-api-action="clear">clear()</button>
+                  </div>
+                </div>
+                <div class="col-12 col-lg-6">
+                  <div id="demo-api-result" class="alert alert-secondary mb-0">
+                    <strong>ผลลัพธ์ API</strong><br />
+                    กดปุ่มด้านซ้ายเพื่อเรียกใช้งาน manager ที่ได้จาก <code>window.mangoPicker.init(...)</code>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-3 d-none" data-code-panel="code-api-controls">
+              <div class="border rounded-3 overflow-hidden">
+                <div class="bg-dark text-light p-3 overflow-auto">
+                  <pre class="mb-0"><code class="small text-light font-monospace"></code></pre>
+                </div>
+              </div>
+            </div>
+            <textarea id="code-api-controls" hidden>
+              <input type="text" class="form-control api-demo" name="api_demo" />
+
+              <script>
+                var api_picker = window.mangoPicker.init({
+                  selector: ".api-demo",
+                  language: "th",
+                  format: "Y-m-d"
+                });
+
+                api_picker.open();
+                api_picker.set_value("2026-04-23");
+                console.log(api_picker.get_value());
+                api_picker.clear();
+                api_picker.reset();
+                api_picker.close();
+              </script>
+            </textarea>
+          </div>
+        </div>
+      </article>
+
+      <article class="col-12">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="mb-4">
+              <span class="badge rounded-pill text-bg-secondary mb-2">Reference Tables</span>
+              <h2 class="h3 mb-2">ตาราง Options, Callbacks และ Function Options</h2>
+              <p class="text-body-secondary mb-0">
+                ส่วนนี้เป็นคู่มืออ่านเร็วสำหรับคนเริ่มใช้งานจริง ตารางจะบอกว่า option แต่ละตัวหมายถึงอะไร และใส่ค่าตัวอย่างแบบไหนได้
+              </p>
+            </div>
+
+            <h3 class="h5 mb-3">Options ที่ตั้งค่าได้</h3>
+            <div class="table-responsive mb-4">
+              <table class="table table-sm align-middle">
+                <thead>
+                  <tr>
+                    <th>Option</th>
+                    <th>ค่าเริ่มต้น</th>
+                    <th>หมายถึงอะไร</th>
+                    <th>ตัวอย่าง</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>selector</code></td><td><code>""</code></td><td>เลือก input ที่ต้องการผูก picker</td><td><code>selector: ".appointment-date"</code></td></tr>
+                  <tr><td><code>language</code></td><td><code>"en"</code></td><td>ภาษาที่ใช้แสดงเดือน วัน และปุ่ม</td><td><code>language: "th"</code></td></tr>
+                  <tr><td><code>format</code></td><td><code>"Y-m-d"</code></td><td>รูปแบบค่าที่เก็บลง input</td><td><code>format: "Y-m-d H:i"</code></td></tr>
+                  <tr><td><code>buddha</code></td><td><code>false</code></td><td>แสดงปี พ.ศ. แต่เก็บค่า ค.ศ.</td><td><code>buddha: true</code></td></tr>
+                  <tr><td><code>range</code></td><td><code>false</code></td><td>เลือกค่าเป็นช่วง</td><td><code>range: true</code></td></tr>
+                  <tr><td><code>range_separator</code></td><td><code>" - "</code></td><td>ตัวคั่นค่าช่วงใน input</td><td><code>range_separator: " ถึง "</code></td></tr>
+                  <tr><td><code>multiple</code></td><td><code>false</code></td><td>เลือกหลายค่าใน input เดียว</td><td><code>multiple: true</code></td></tr>
+                  <tr><td><code>multiple_separator</code></td><td><code>", "</code></td><td>ตัวคั่นค่าหลายรายการ</td><td><code>multiple_separator: " / "</code></td></tr>
+                  <tr><td><code>inline</code></td><td><code>false</code></td><td>แสดง picker บนหน้าแทน popup</td><td><code>inline: true</code></td></tr>
+                  <tr><td><code>mode</code></td><td><code>"popup"</code></td><td>กำหนดโหมดการแสดงผล</td><td><code>mode: "inline"</code></td></tr>
+                  <tr><td><code>inline_container</code></td><td><code>null</code></td><td>จุดที่จะใส่ inline picker</td><td><code>inline_container: "#calendar-host"</code></td></tr>
+                  <tr><td><code>lazy_render</code></td><td><code>true</code></td><td>สร้าง popup เมื่อเปิดครั้งแรก</td><td><code>lazy_render: false</code></td></tr>
+                  <tr><td><code>hour_step</code></td><td><code>1</code></td><td>ระยะห่างรายการชั่วโมง</td><td><code>hour_step: 2</code></td></tr>
+                  <tr><td><code>minute_step</code></td><td><code>1</code></td><td>ระยะห่างรายการนาที</td><td><code>minute_step: 15</code></td></tr>
+                  <tr><td><code>second_step</code></td><td><code>1</code></td><td>ระยะห่างรายการวินาที</td><td><code>second_step: 10</code></td></tr>
+                  <tr><td><code>time_12h</code></td><td><code>false</code></td><td>แสดงเวลาแบบ AM/PM</td><td><code>time_12h: true</code></td></tr>
+                  <tr><td><code>close_on_select</code></td><td><code>true</code></td><td>ปิด picker เมื่อเลือกครบ</td><td><code>close_on_select: false</code></td></tr>
+                  <tr><td><code>readonly_input</code></td><td><code>true</code></td><td>กันพิมพ์เองใน input</td><td><code>readonly_input: false</code></td></tr>
+                  <tr><td><code>allow_clear</code></td><td><code>true</code></td><td>แสดงปุ่มล้างค่า</td><td><code>allow_clear: false</code></td></tr>
+                  <tr><td><code>show_reset_button</code></td><td><code>false</code></td><td>แสดงปุ่ม reset ค่าเริ่มต้น</td><td><code>show_reset_button: true</code></td></tr>
+                  <tr><td><code>show_today_button</code></td><td><code>true</code></td><td>แสดงปุ่มวันนี้/ตอนนี้</td><td><code>show_today_button: false</code></td></tr>
+                  <tr><td><code>reset_label</code></td><td><code>null</code></td><td>ข้อความปุ่ม reset</td><td><code>reset_label: "เริ่มใหม่"</code></td></tr>
+                  <tr><td><code>z_index</code></td><td><code>3000</code></td><td>ลำดับซ้อนของ popup</td><td><code>z_index: 5000</code></td></tr>
+                  <tr><td><code>default_hour</code></td><td><code>0</code></td><td>ชั่วโมงเริ่มต้น</td><td><code>default_hour: 9</code></td></tr>
+                  <tr><td><code>default_minute</code></td><td><code>0</code></td><td>นาทีเริ่มต้น</td><td><code>default_minute: 30</code></td></tr>
+                  <tr><td><code>default_second</code></td><td><code>0</code></td><td>วินาทีเริ่มต้น</td><td><code>default_second: 0</code></td></tr>
+                  <tr><td><code>week_start</code></td><td><code>null</code></td><td>วันแรกของสัปดาห์</td><td><code>week_start: 1</code></td></tr>
+                  <tr><td><code>disable_past</code></td><td><code>false</code></td><td>ปิดวันที่ก่อนวันนี้</td><td><code>disable_past: true</code></td></tr>
+                  <tr><td><code>swipe_navigation</code></td><td><code>true</code></td><td>ปัดซ้าย/ขวาบนมือถือ</td><td><code>swipe_navigation: false</code></td></tr>
+                  <tr><td><code>keyboard_navigation</code></td><td><code>true</code></td><td>ใช้ arrow keys, Enter, Esc</td><td><code>keyboard_navigation: false</code></td></tr>
+                  <tr><td><code>min_date</code></td><td><code>null</code></td><td>วันที่ต่ำสุดที่เลือกได้</td><td><code>min_date: "2026-01-01"</code></td></tr>
+                  <tr><td><code>max_date</code></td><td><code>null</code></td><td>วันที่สูงสุดที่เลือกได้</td><td><code>max_date: "2026-12-31"</code></td></tr>
+                  <tr><td><code>enabled_dates</code></td><td><code>[]</code></td><td>รายการวันที่อนุญาตให้เลือกเท่านั้น</td><td><code>enabled_dates: ["2026-04-01"]</code></td></tr>
+                  <tr><td><code>disabled_dates</code></td><td><code>[]</code></td><td>รายการวันที่ปิดไม่ให้เลือก</td><td><code>disabled_dates: ["2026-04-13"]</code></td></tr>
+                  <tr><td><code>enabled_ranges</code></td><td><code>[]</code></td><td>ช่วงวันที่อนุญาตให้เลือกเท่านั้น</td><td><code>enabled_ranges: [{ start: "2026-04-01", end: "2026-04-30" }]</code></td></tr>
+                  <tr><td><code>disabled_ranges</code></td><td><code>[]</code></td><td>ช่วงวันที่ปิดไม่ให้เลือก</td><td><code>disabled_ranges: [{ start: "2026-04-20", end: "2026-04-22" }]</code></td></tr>
+                  <tr><td><code>disabled_weekdays</code></td><td><code>[]</code></td><td>ปิดวันในสัปดาห์</td><td><code>disabled_weekdays: [0, 6]</code></td></tr>
+                  <tr><td><code>enabled_date</code></td><td><code>null</code></td><td>function whitelist วันที่</td><td><code>enabled_date: function (date) { return date.getDay() !== 0; }</code></td></tr>
+                  <tr><td><code>disabled_date</code></td><td><code>null</code></td><td>function blacklist วันที่</td><td><code>disabled_date: function (date) { return date.getDay() === 3; }</code></td></tr>
+                  <tr><td><code>on_open</code></td><td><code>null</code></td><td>callback ตอนเปิด picker</td><td><code>on_open: function (detail) { console.log(detail.value); }</code></td></tr>
+                  <tr><td><code>on_close</code></td><td><code>null</code></td><td>callback ตอนปิด picker</td><td><code>on_close: function (detail) { console.log(detail.value); }</code></td></tr>
+                  <tr><td><code>on_select</code></td><td><code>null</code></td><td>callback ตอนผู้ใช้เลือกค่า</td><td><code>on_select: function (detail) { console.log(detail.display_value); }</code></td></tr>
+                  <tr><td><code>on_change</code></td><td><code>null</code></td><td>callback ตอนค่าใน input เปลี่ยน</td><td><code>on_change: function (detail) { console.log(detail.value); }</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3 class="h5 mb-3">Callbacks</h3>
+            <div class="table-responsive mb-4">
+              <table class="table table-sm align-middle">
+                <thead>
+                  <tr>
+                    <th>Callback</th>
+                    <th>เรียกเมื่อไหร่</th>
+                    <th>หมายถึงอะไร</th>
+                    <th>ตัวอย่าง</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>on_open(detail)</code></td><td>เปิด picker</td><td>ใช้รู้ว่าผู้ใช้เริ่มเปิด picker แล้ว</td><td><code>on_open: function (detail) { console.log(detail.value); }</code></td></tr>
+                  <tr><td><code>on_close(detail)</code></td><td>ปิด picker</td><td>ใช้ตรวจสถานะหลังผู้ใช้ออกจาก picker</td><td><code>on_close: function (detail) { console.log(detail.values); }</code></td></tr>
+                  <tr><td><code>on_select(detail)</code></td><td>เลือกวัน/เดือน/ปี/เวลา</td><td>ใช้ preview ค่าระหว่างเลือก</td><td><code>on_select: function (detail) { console.log(detail.display_value); }</code></td></tr>
+                  <tr><td><code>on_change(detail)</code></td><td>ค่า input เปลี่ยนจริง</td><td>ใช้ sync ฟอร์ม, validate หรือเรียก API</td><td><code>on_change: function (detail) { console.log(detail.value); }</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <h3 class="h5 mb-3">Function Options</h3>
+            <div class="table-responsive">
+              <table class="table table-sm align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Function option</th>
+                    <th>หมายถึงอะไร</th>
+                    <th>ต้อง return</th>
+                    <th>ตัวอย่าง</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td><code>enabled_date(candidate_date)</code></td><td>whitelist วันที่ที่เลือกได้</td><td><code>true</code> เพื่ออนุญาตวันนั้น</td><td><code>enabled_date: function (date) { return date.getDay() !== 0; }</code></td></tr>
+                  <tr><td><code>disabled_date(candidate_date)</code></td><td>blacklist วันที่ที่เลือกไม่ได้</td><td><code>true</code> เพื่อปิดวันนั้น</td><td><code>disabled_date: function (date) { return date.getDate() === 13; }</code></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <p class="small text-center text-body-secondary mt-4 mb-0">
+      demo page นี้ใช้ไฟล์จริงจาก <code>../dist</code> จึงเหมาะสำหรับเปิดทดสอบ library ก่อนนำไปใช้ต่อในโปรเจ็กต์
+    </p>
+  </main>
+
+  <script src="../dist/mangopicker.js?v=1.0.0"></script>
+  <script src="../dist/i18n/th.js?v=1.0.0"></script>
+  <script>
+    (function () {
+      function normalize_code_block(raw_code) {
+        var line_list = String(raw_code || "").replace(/\r/g, "").split("\n");
+
+        while (line_list.length && !line_list[0].trim()) {
+          line_list.shift();
+        }
+
+        while (line_list.length && !line_list[line_list.length - 1].trim()) {
+          line_list.pop();
+        }
+
+        var min_indent = null;
+
+        line_list.forEach(function (line_value) {
+          if (!line_value.trim()) {
+            return;
+          }
+
+          var indent_size = line_value.match(/^\s*/)[0].length;
+
+          if (min_indent === null || indent_size < min_indent) {
+            min_indent = indent_size;
+          }
+        });
+
+        return line_list
+          .map(function (line_value) {
+            return min_indent ? line_value.slice(min_indent) : line_value;
+          })
+          .join("\n");
+      }
+
+      function get_code_text(code_id) {
+        var source_element = document.getElementById(code_id);
+        return source_element ? normalize_code_block(source_element.value) : "";
+      }
+
+      function find_copy_button(code_id) {
+        return document.querySelector('.js-copy-code[data-code-id="' + code_id + '"]');
+      }
+
+      function toggle_code_panel(toggle_button) {
+        var code_id = toggle_button.getAttribute("data-code-id");
+        var panel_element = document.querySelector('[data-code-panel="' + code_id + '"]');
+        var code_element = panel_element ? panel_element.querySelector("code") : null;
+        var copy_button = find_copy_button(code_id);
+
+        if (!panel_element || !code_element) {
+          return;
+        }
+
+        if (panel_element.classList.contains("d-none")) {
+          code_element.textContent = get_code_text(code_id);
+          panel_element.classList.remove("d-none");
+          toggle_button.textContent = "ซ่อนโค้ด";
+
+          if (copy_button) {
+            copy_button.disabled = false;
+          }
+
+          return;
+        }
+
+        panel_element.classList.add("d-none");
+        toggle_button.textContent = "แสดงโค้ด";
+
+        if (copy_button) {
+          copy_button.disabled = true;
+          copy_button.textContent = "คัดลอกโค้ด";
+        }
+      }
+
+      function copy_text_to_clipboard(text_value) {
+        if (navigator.clipboard && window.isSecureContext) {
+          return navigator.clipboard.writeText(text_value);
+        }
+
+        return new Promise(function (resolve, reject) {
+          var helper_textarea = document.createElement("textarea");
+          helper_textarea.value = text_value;
+          helper_textarea.setAttribute("readonly", "readonly");
+          helper_textarea.style.position = "fixed";
+          helper_textarea.style.top = "-9999px";
+          document.body.appendChild(helper_textarea);
+          helper_textarea.select();
+
+          try {
+            document.execCommand("copy");
+            document.body.removeChild(helper_textarea);
+            resolve();
+          } catch (error) {
+            document.body.removeChild(helper_textarea);
+            reject(error);
+          }
+        });
+      }
+
+      function setup_code_buttons() {
+        document.querySelectorAll(".js-toggle-code").forEach(function (toggle_button) {
+          toggle_button.addEventListener("click", function () {
+            toggle_code_panel(toggle_button);
+          });
+        });
+
+        document.querySelectorAll(".js-copy-code").forEach(function (copy_button) {
+          copy_button.addEventListener("click", function () {
+            var code_id = copy_button.getAttribute("data-code-id");
+            var code_text = get_code_text(code_id);
+
+            copy_text_to_clipboard(code_text).then(function () {
+              copy_button.textContent = "คัดลอกแล้ว";
+
+              window.setTimeout(function () {
+                copy_button.textContent = "คัดลอกโค้ด";
+              }, 1400);
+            });
+          });
+        });
+      }
+
+      function create_log_entry_html(event_name, detail) {
+        var value_text = detail && detail.value ? detail.value : "(empty)";
+        var display_text = detail && detail.display_value ? detail.display_value : "(empty)";
+
+        return [
+          '<div class="list-group-item">',
+          "<strong>" + event_name + "</strong>",
+          '<div class="text-body-secondary small">value: ' + value_text + "</div>",
+          '<div class="text-body-secondary small">display: ' + display_text + "</div>",
+          "</div>"
+        ].join("");
+      }
+
+      function setup_demo_pickers() {
+        window.mangoPicker.init({
+          selector: "#demo-basic-date",
+          language: "th",
+          format: "Y-m-d"
+        });
+
+        window.mangoPicker.init({
+          selector: "#demo-buddhist-date",
+          language: "th",
+          format: "Y-m-d",
+          buddha: true
+        });
+
+        window.mangoPicker.init({
+          selector: "#demo-datetime",
+          language: "th",
+          format: "Y-m-d H:i"
+        });
+
+        window.mangoPicker.init({
+          selector: "#demo-time-only",
+          format: "H:i",
+          hour_step: 2,
+          minute_step: 15
+        });
+
+        window.mangoPicker.init({
+          selector: "#demo-time-12h",
+          format: "h:i:s A",
+          minute_step: 15,
+          second_step: 10
+        });
+
+        window.mangoPicker.init({
+          selector: "#demo-time-range",
+          format: "H:i",
+          range: true,
+          range_separator: " - ",
+          minute_step: 30
+        });
+
+        window.mangoPicker.init({
+          selector: "#demo-month-only",
+          language: "th",
+          format: "Y-m",
+          buddha: true
+        });
+
+        window.mangoPicker.init({
+          selector: "#demo-year-only",
+          language: "th",
+          format: "Y",
+          buddha: true
+        });
+
+        window.mangoPicker.init({
+          selector: "#demo-date-range",
+          language: "th",
+          format: "Y-m-d",
+          range: true,
+          range_separator: " ถึง "
+        });
+
+        window.mangoPicker.init({
+          selector: "#demo-range-limit",
+          language: "th",
+          format: "Y-m-d",
+          min_date: "2026-01-01",
+          max_date: "2026-12-31",
+          disabled_weekdays: [0, 6]
+        });
+
+        window.mangoPicker.init({
+          selector: "#demo-open-close-rules",
+          language: "th",
+          format: "Y-m-d",
+          enabled_ranges: [
+            { start: "2026-04-01", end: "2026-04-30" },
+            { start: "2026-06-01", end: "2026-06-15" }
+          ],
+          disabled_dates: ["2026-04-13", "2026-04-14", "2026-04-15"],
+          disabled_ranges: [
+            { start: "2026-04-20", end: "2026-04-22" }
+          ]
+        });
+
+        window.mangoPicker.init({
+          selector: "#demo-function-rules",
+          language: "th",
+          format: "Y-m-d",
+          enabled_date: function (candidate_date) {
+            return candidate_date.getDate() % 2 === 0;
+          },
+          disabled_date: function (candidate_date) {
+            return candidate_date.getDay() === 3;
+          }
+        });
+
+        window.mangoPicker.init({
+          selector: "#demo-multiple",
+          language: "th",
+          format: "Y-m-d",
+          multiple: true,
+          multiple_separator: " | "
+        });
+
+        window.mangoPicker.init({
+          selector: "#demo-inline",
+          language: "th",
+          format: "Y-m-d",
+          inline: true,
+          week_start: 1
+        });
+
+        window.mangoPicker.init({
+          selector: "#demo-native-date, #demo-native-time",
+          language: "th"
+        });
+
+        window.mangoPicker.init({
+          selector: "#demo-data-attributes"
+        });
+
+        window.demoMangoEnabledWeekday = function (candidate_date) {
+          return candidate_date.getDay() >= 1 && candidate_date.getDay() <= 5;
+        };
+
+        window.demoMangoDisabledFriday = function (candidate_date) {
+          return candidate_date.getDay() === 5;
+        };
+
+        window.demoMangoFunctionOptionChange = function (detail) {
+          var result_element = document.getElementById("demo-function-options-result");
+
+          if (!result_element) {
+            return;
+          }
+
+          result_element.innerHTML = "<strong>on_change</strong><br />value: " + (detail.value || "(empty)");
+        };
+
+        window.mangoPicker.init({
+          selector: "#demo-function-options"
+        });
+
+        var callback_log_element = document.getElementById("demo-callback-log");
+
+        function append_callback_log(event_name, detail) {
+          if (!callback_log_element) {
+            return;
+          }
+
+          if (callback_log_element.textContent.indexOf("ยังไม่มี event") >= 0) {
+            callback_log_element.innerHTML = "";
+          }
+
+          callback_log_element.insertAdjacentHTML("afterbegin", create_log_entry_html(event_name, detail));
+
+          while (callback_log_element.children.length > 8) {
+            callback_log_element.removeChild(callback_log_element.lastElementChild);
+          }
+        }
+
+        window.mangoPicker.init({
+          selector: "#demo-callbacks",
+          language: "th",
+          format: "Y-m-d H:i",
+          on_open: function (detail) {
+            append_callback_log("on_open", detail);
+          },
+          on_close: function (detail) {
+            append_callback_log("on_close", detail);
+          },
+          on_select: function (detail) {
+            append_callback_log("on_select", detail);
+          },
+          on_change: function (detail) {
+            append_callback_log("on_change", detail);
+          }
+        });
+
+        var api_result_element = document.getElementById("demo-api-result");
+        var api_picker_manager = window.mangoPicker.init({
+          selector: "#demo-api",
+          language: "th",
+          format: "Y-m-d"
+        });
+
+        function update_api_result(title_text, body_text) {
+          api_result_element.innerHTML = "<strong>" + title_text + "</strong><br />" + body_text;
+        }
+
+        document.querySelectorAll(".js-api-action").forEach(function (action_button) {
+          action_button.addEventListener("click", function () {
+            var action_name = action_button.getAttribute("data-api-action");
+
+            if (action_name === "open") {
+              api_picker_manager.open();
+              update_api_result("open()", "เปิด picker เรียบร้อย");
+              return;
+            }
+
+            if (action_name === "close") {
+              api_picker_manager.close();
+              update_api_result("close()", "ปิด picker เรียบร้อย");
+              return;
+            }
+
+            if (action_name === "set_today") {
+              var current_date = new Date();
+              var year_value = current_date.getFullYear();
+              var month_value = String(current_date.getMonth() + 1).padStart(2, "0");
+              var day_value = String(current_date.getDate()).padStart(2, "0");
+              var formatted_today = year_value + "-" + month_value + "-" + day_value;
+
+              api_picker_manager.set_value(formatted_today);
+              update_api_result("set_value(today)", "ตั้งค่าเป็น " + formatted_today);
+              return;
+            }
+
+            if (action_name === "get_value") {
+              update_api_result("get_value()", api_picker_manager.get_value() || "(empty)");
+              return;
+            }
+
+            if (action_name === "reset") {
+              api_picker_manager.reset();
+              update_api_result("reset()", api_picker_manager.get_value() || "(empty)");
+              return;
+            }
+
+            if (action_name === "clear") {
+              api_picker_manager.clear();
+              update_api_result("clear()", "ล้างค่าเรียบร้อย");
+            }
+          });
+        });
+      }
+
+      setup_code_buttons();
+      setup_demo_pickers();
+    })();
+  </script>
+</body>
+</html>
+

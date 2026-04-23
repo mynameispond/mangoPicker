@@ -1,0 +1,26 @@
+{
+  "name": "mangopicker",
+  "version": "1.0.0",
+  "description": "Vanilla JS date and time picker with Buddhist year display support.",
+  "main": "dist/mangopicker.js",
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "node ./scripts/build.mjs"
+  },
+  "keywords": [
+    "datepicker",
+    "datetimepicker",
+    "buddhist-year",
+    "thai",
+    "vanilla-js"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "esbuild": "^0.25.11"
+  }
+}
