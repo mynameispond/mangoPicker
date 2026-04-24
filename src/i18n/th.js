@@ -27,6 +27,8 @@ const th_language = {
     selected: "เลือกแล้ว",
     nothing_selected: "ยังไม่ได้เลือก",
     time: "เวลา",
+    start: "เริ่ม",
+    end: "สิ้นสุด",
     multiple_count: "รายการ"
   }
 };

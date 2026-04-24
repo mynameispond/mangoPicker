@@ -28,6 +28,8 @@ const en_language = {
     selected: "Selected",
     nothing_selected: "Nothing selected",
     time: "Time",
+    start: "Start",
+    end: "End",
     multiple_count: "items selected"
   }
 };

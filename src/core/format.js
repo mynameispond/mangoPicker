@@ -217,6 +217,10 @@ export function parse_value_by_format(raw_value, format_string, options = {}) {
   let day_value = date_parts.day ?? base_date.getDate();
   let hour_value = date_parts.hour ?? options.default_hour ?? 0;
 
+  if (options.buddha && date_parts.year !== undefined && year_value >= 2400) {
+    year_value -= 543;
+  }
+
   if (date_parts.hour_12 !== undefined) {
     hour_value = date_parts.hour_12;
 

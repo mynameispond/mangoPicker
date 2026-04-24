@@ -120,7 +120,9 @@ function normalize_data_option_name(attribute_name) {
 function read_data_options(element) {
   const boolean_options = new Set([
     "buddha",
+    "buddha_input",
     "range",
+    "range_time",
     "multiple",
     "inline",
     "lazy_render",
@@ -145,7 +147,7 @@ function read_data_options(element) {
     "week_start"
   ]);
   const list_options = new Set(["enabled_dates", "disabled_dates", "enabled_ranges", "disabled_ranges"]);
-  const function_options = new Set(["enabled_date", "disabled_date", "on_open", "on_close", "on_select", "on_change"]);
+  const function_options = new Set(["enabled_date", "disabled_date", "render_cell_date", "on_open", "on_close", "on_select", "on_change"]);
   const ignored_options = new Set(["ready", "role"]);
   const data_options = {};
 

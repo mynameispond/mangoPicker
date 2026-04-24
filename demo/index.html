@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
-  <link rel="stylesheet" href="../dist/mangopicker.css?v=1.0.0" />
+  <link rel="stylesheet" href="../dist/mangopicker.css?v=0.1.0" />
   <style>
     :root {
       --demo-page-bg: #f6f1e8;
@@ -435,7 +435,7 @@
               <div>
                 <span class="badge rounded-pill text-bg-secondary mb-2">Time Range</span>
                 <h2 class="h4 mb-2">เลือกช่วงเวลา</h2>
-                <p class="text-body-secondary mb-0">ใช้ <code>range: true</code> กับ format เฉพาะเวลาได้เหมือนช่วงวันที่</p>
+                <p class="text-body-secondary mb-0">ใช้ <code>range_time: true</code> เพื่อให้มีตัวเลือกเวลาเริ่ม/สิ้นสุดแยกกันตาม format</p>
               </div>
               <div class="d-flex flex-wrap gap-2">
                 <button type="button" class="btn btn-outline-secondary btn-sm js-toggle-code" data-code-id="code-time-range">แสดงโค้ด</button>
@@ -447,7 +447,7 @@
                 <label for="demo-time-range" class="form-label fw-semibold">ช่วงเวลาเปิดให้จอง</label>
                 <input type="text" id="demo-time-range" class="form-control" placeholder="เลือกเวลาเริ่ม แล้วเลือกเวลาสิ้นสุด" />
               </div>
-              <p class="small text-body-secondary mb-0">เหมาะกับการตั้งช่วงเวลาเปิดร้าน, ช่วงรับนัด, หรือช่วงส่งสินค้า</p>
+              <p class="small text-body-secondary mb-0">ถ้าใช้ <code>H:i</code> จะเลือกชั่วโมงและนาที 2 ชุด และถ้าใช้ <code>H:i:s</code> จะมีวินาทีเพิ่มให้อัตโนมัติ</p>
             </div>
             <div class="mt-3 d-none" data-code-panel="code-time-range">
               <div class="border rounded-3 overflow-hidden">
@@ -463,7 +463,7 @@
                 window.mangoPicker.init({
                   selector: ".working-hours",
                   format: "H:i",
-                  range: true,
+                  range_time: true,
                   range_separator: " - ",
                   minute_step: 30
                 });
@@ -522,9 +522,9 @@
             <div class="d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3">
               <div>
                 <span class="badge rounded-pill text-bg-secondary mb-2">Buddhist</span>
-                <h2 class="h4 mb-2">แสดงปีแบบ พ.ศ. แต่เก็บค่า ค.ศ.</h2>
+                <h2 class="h4 mb-2">แยกได้ว่าปฏิทินหรือ input จะเป็น พ.ศ.</h2>
                 <p class="text-body-secondary mb-0">
-                  เปิด <code>buddha: true</code> เพื่อให้ผู้ใช้เห็นปีแบบ พ.ศ. โดย input เดิมยังเก็บค่าเป็น ค.ศ.
+                  ใช้ <code>buddha: true</code> ให้ปฏิทินแสดงปี พ.ศ. และถ้าต้องการให้ช่องที่ผู้ใช้เห็นเป็น พ.ศ. ด้วย ให้เปิด <code>buddha_input: true</code> เพิ่มใน format ที่มีปี
                 </p>
               </div>
               <div class="d-flex flex-wrap gap-2">
@@ -534,10 +534,14 @@
             </div>
             <div class="border rounded-3 bg-body-tertiary p-3 d-grid gap-3">
               <div>
-                <label for="demo-buddhist-date" class="form-label fw-semibold">วันเกิด</label>
-                <input type="text" id="demo-buddhist-date" class="form-control" placeholder="พ.ศ. ที่เห็น จะแปลงเก็บเป็น ค.ศ." />
+                <label for="demo-buddhist-date" class="form-label fw-semibold">ปฏิทินเป็น พ.ศ. แต่ input ยังเป็น ค.ศ.</label>
+                <input type="text" id="demo-buddhist-date" class="form-control" placeholder="เปิดปฏิทินแล้วจะเห็นปี พ.ศ." />
               </div>
-              <p class="small text-body-secondary mb-0">เปิด devtools หรือ submit ฟอร์มเพื่อดูว่าค่าใน input เดิมยังเป็น <code>YYYY-MM-DD</code></p>
+              <div>
+                <label for="demo-buddhist-display-date" class="form-label fw-semibold">input ที่ผู้ใช้เห็นเป็น พ.ศ. ด้วย</label>
+                <input type="text" id="demo-buddhist-display-date" class="form-control" placeholder="ช่องที่เห็นจะเป็น พ.ศ. แต่ source input ยังเป็น ค.ศ." />
+              </div>
+              <p class="small text-body-secondary mb-0">กรณีที่สองจะใช้ mirror input แบบอ่านอย่างเดียว ผู้ใช้เห็นเป็น พ.ศ. แต่ค่าจริงใน source input ที่ใช้ submit ฟอร์มยังเป็น <code>YYYY-MM-DD</code> แบบ ค.ศ.</p>
             </div>
             <div class="mt-3 d-none" data-code-panel="code-buddhist">
               <div class="border rounded-3 overflow-hidden">
@@ -548,6 +552,7 @@
             </div>
             <textarea id="code-buddhist" hidden>
               <input type="text" class="form-control birthday" name="birthday" />
+              <input type="text" class="form-control birthday-display-buddha" name="birthday_display_buddha" />
 
               <script>
                 window.mangoPicker.init({
@@ -555,6 +560,14 @@
                   language: "th",
                   format: "Y-m-d",
                   buddha: true
+                });
+
+                window.mangoPicker.init({
+                  selector: ".birthday-display-buddha",
+                  language: "th",
+                  format: "Y-m-d",
+                  buddha: true,
+                  buddha_input: true
                 });
               </script>
             </textarea>
@@ -1154,6 +1167,64 @@
         </div>
       </article>
 
+      <article class="col-12 col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-body p-4">
+            <div class="d-flex flex-column flex-lg-row align-items-start justify-content-between gap-3 mb-3">
+              <div>
+                <span class="badge rounded-pill text-bg-secondary mb-2">Render Hook</span>
+                <h2 class="h4 mb-2">render_cell_date สำหรับแต่ง day cell</h2>
+                <p class="text-body-secondary mb-0">ใช้ <code>render_cell_date(detail)</code> เมื่อต้องการเปลี่ยนข้อความหรือ HTML ภายในช่องวันแต่ละช่อง</p>
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <button type="button" class="btn btn-outline-secondary btn-sm js-toggle-code" data-code-id="code-render-cell">แสดงโค้ด</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm js-copy-code" data-code-id="code-render-cell" disabled>คัดลอกโค้ด</button>
+              </div>
+            </div>
+            <div class="border rounded-3 bg-body-tertiary p-3 d-grid gap-3">
+              <div>
+                <label for="demo-render-cell" class="form-label fw-semibold">วันส่งโปรโมชัน</label>
+                <input type="text" id="demo-render-cell" class="form-control" placeholder="วันเสาร์จะมี SALE / วันอาทิตย์จะมี OFF" />
+              </div>
+              <p class="small text-body-secondary mb-0">ตัวอย่างนี้คืน HTML string จาก function เพื่อใส่ label ย่อยใน day cell ตามวันในสัปดาห์</p>
+            </div>
+            <div class="mt-3 d-none" data-code-panel="code-render-cell">
+              <div class="border rounded-3 overflow-hidden">
+                <div class="bg-dark text-light p-3 overflow-auto">
+                  <pre class="mb-0"><code class="small text-light font-monospace"></code></pre>
+                </div>
+              </div>
+            </div>
+            <textarea id="code-render-cell" hidden>
+              <input type="text" class="form-control promo-date" name="promo_date" />
+
+              <script>
+                window.mangoPicker.init({
+                  selector: ".promo-date",
+                  language: "th",
+                  format: "Y-m-d",
+                  render_cell_date: function (detail) {
+                    var note = "";
+
+                    if (detail.date.getDay() === 6) {
+                      note = "SALE";
+                    } else if (detail.date.getDay() === 0) {
+                      note = "OFF";
+                    }
+
+                    if (!note) {
+                      return '<span>' + detail.day + '</span>';
+                    }
+
+                    return '<span style="display:block;line-height:1.05;"><strong>' + detail.day + '</strong><small style="display:block;font-size:10px;">' + note + "</small></span>";
+                  }
+                });
+              </script>
+            </textarea>
+          </div>
+        </div>
+      </article>
+
       <article class="col-12">
         <div class="card border-0 shadow-sm h-100">
           <div class="card-body p-4">
@@ -1316,21 +1387,23 @@
                   <tr><td><code>selector</code></td><td><code>""</code></td><td>เลือก input ที่ต้องการผูก picker</td><td><code>selector: ".appointment-date"</code></td></tr>
                   <tr><td><code>language</code></td><td><code>"en"</code></td><td>ภาษาที่ใช้แสดงเดือน วัน และปุ่ม</td><td><code>language: "th"</code></td></tr>
                   <tr><td><code>format</code></td><td><code>"Y-m-d"</code></td><td>รูปแบบค่าที่เก็บลง input</td><td><code>format: "Y-m-d H:i"</code></td></tr>
-                  <tr><td><code>buddha</code></td><td><code>false</code></td><td>แสดงปี พ.ศ. แต่เก็บค่า ค.ศ.</td><td><code>buddha: true</code></td></tr>
-                  <tr><td><code>range</code></td><td><code>false</code></td><td>เลือกค่าเป็นช่วง</td><td><code>range: true</code></td></tr>
-                  <tr><td><code>range_separator</code></td><td><code>" - "</code></td><td>ตัวคั่นค่าช่วงใน input</td><td><code>range_separator: " ถึง "</code></td></tr>
-                  <tr><td><code>multiple</code></td><td><code>false</code></td><td>เลือกหลายค่าใน input เดียว</td><td><code>multiple: true</code></td></tr>
-                  <tr><td><code>multiple_separator</code></td><td><code>", "</code></td><td>ตัวคั่นค่าหลายรายการ</td><td><code>multiple_separator: " / "</code></td></tr>
-                  <tr><td><code>inline</code></td><td><code>false</code></td><td>แสดง picker บนหน้าแทน popup</td><td><code>inline: true</code></td></tr>
+                  <tr><td><code>buddha</code></td><td><code>false</code></td><td>เปลี่ยนปีที่เห็นในปฏิทินให้เป็น พ.ศ. แต่ source input ยังเป็น ค.ศ.</td><td><code>buddha: true</code></td></tr>
+                  <tr><td><code>buddha_input</code></td><td><code>false</code></td><td>ใช้ร่วมกับ <code>buddha: true</code> และ format ที่มีปี เพื่อให้ช่องที่ผู้ใช้เห็นเป็น พ.ศ. ด้วย</td><td><code>buddha_input: true</code></td></tr>
+                  <tr><td><code>range</code></td><td><code>false</code></td><td>ใช้เลือกวันเริ่มและวันสิ้นสุดใน input เดียว</td><td><code>range: true</code></td></tr>
+                  <tr><td><code>range_time</code></td><td><code>false</code></td><td>ใช้เลือกเวลาเริ่มและเวลาสิ้นสุดใน input เดียว สำหรับ format เฉพาะเวลา</td><td><code>range_time: true</code></td></tr>
+                  <tr><td><code>range_separator</code></td><td><code>" - "</code></td><td>ข้อความที่คั่นค่าซ้ายและขวาเวลาเป็น range</td><td><code>range_separator: " ถึง "</code></td></tr>
+                  <tr><td><code>multiple</code></td><td><code>false</code></td><td>ให้เลือกได้หลายค่าใน input เดียว</td><td><code>multiple: true</code></td></tr>
+                  <tr><td><code>multiple_separator</code></td><td><code>", "</code></td><td>ข้อความที่คั่นหลายค่าตอนเก็บใน input</td><td><code>multiple_separator: " / "</code></td></tr>
+                  <tr><td><code>inline</code></td><td><code>false</code></td><td>แสดง picker ค้างอยู่บนหน้า ไม่ต้องเปิดเป็น popup</td><td><code>inline: true</code></td></tr>
                   <tr><td><code>mode</code></td><td><code>"popup"</code></td><td>กำหนดโหมดการแสดงผล</td><td><code>mode: "inline"</code></td></tr>
                   <tr><td><code>inline_container</code></td><td><code>null</code></td><td>จุดที่จะใส่ inline picker</td><td><code>inline_container: "#calendar-host"</code></td></tr>
-                  <tr><td><code>lazy_render</code></td><td><code>true</code></td><td>สร้าง popup เมื่อเปิดครั้งแรก</td><td><code>lazy_render: false</code></td></tr>
-                  <tr><td><code>hour_step</code></td><td><code>1</code></td><td>ระยะห่างรายการชั่วโมง</td><td><code>hour_step: 2</code></td></tr>
-                  <tr><td><code>minute_step</code></td><td><code>1</code></td><td>ระยะห่างรายการนาที</td><td><code>minute_step: 15</code></td></tr>
-                  <tr><td><code>second_step</code></td><td><code>1</code></td><td>ระยะห่างรายการวินาที</td><td><code>second_step: 10</code></td></tr>
-                  <tr><td><code>time_12h</code></td><td><code>false</code></td><td>แสดงเวลาแบบ AM/PM</td><td><code>time_12h: true</code></td></tr>
-                  <tr><td><code>close_on_select</code></td><td><code>true</code></td><td>ปิด picker เมื่อเลือกครบ</td><td><code>close_on_select: false</code></td></tr>
-                  <tr><td><code>readonly_input</code></td><td><code>true</code></td><td>กันพิมพ์เองใน input</td><td><code>readonly_input: false</code></td></tr>
+                  <tr><td><code>lazy_render</code></td><td><code>true</code></td><td>ยังไม่สร้าง DOM ของ popup จนกว่าจะเปิดครั้งแรก</td><td><code>lazy_render: false</code></td></tr>
+                  <tr><td><code>hour_step</code></td><td><code>1</code></td><td>ขยับรายการชั่วโมงทีละกี่หน่วย</td><td><code>hour_step: 2</code></td></tr>
+                  <tr><td><code>minute_step</code></td><td><code>1</code></td><td>ขยับรายการนาทีทีละกี่หน่วย</td><td><code>minute_step: 15</code></td></tr>
+                  <tr><td><code>second_step</code></td><td><code>1</code></td><td>ขยับรายการวินาทีทีละกี่หน่วย</td><td><code>second_step: 10</code></td></tr>
+                  <tr><td><code>time_12h</code></td><td><code>false</code></td><td>เปลี่ยน time panel เป็นแบบ 12 ชั่วโมงพร้อม AM/PM</td><td><code>time_12h: true</code></td></tr>
+                  <tr><td><code>close_on_select</code></td><td><code>true</code></td><td>เลือกค่าครบแล้วให้ปิด picker ทันที</td><td><code>close_on_select: false</code></td></tr>
+                  <tr><td><code>readonly_input</code></td><td><code>true</code></td><td>กันการพิมพ์ตรง ๆ และบังคับให้เลือกผ่าน picker</td><td><code>readonly_input: false</code></td></tr>
                   <tr><td><code>allow_clear</code></td><td><code>true</code></td><td>แสดงปุ่มล้างค่า</td><td><code>allow_clear: false</code></td></tr>
                   <tr><td><code>show_reset_button</code></td><td><code>false</code></td><td>แสดงปุ่ม reset ค่าเริ่มต้น</td><td><code>show_reset_button: true</code></td></tr>
                   <tr><td><code>show_today_button</code></td><td><code>true</code></td><td>แสดงปุ่มวันนี้/ตอนนี้</td><td><code>show_today_button: false</code></td></tr>
@@ -1350,15 +1423,11 @@
                   <tr><td><code>enabled_ranges</code></td><td><code>[]</code></td><td>ช่วงวันที่อนุญาตให้เลือกเท่านั้น</td><td><code>enabled_ranges: [{ start: "2026-04-01", end: "2026-04-30" }]</code></td></tr>
                   <tr><td><code>disabled_ranges</code></td><td><code>[]</code></td><td>ช่วงวันที่ปิดไม่ให้เลือก</td><td><code>disabled_ranges: [{ start: "2026-04-20", end: "2026-04-22" }]</code></td></tr>
                   <tr><td><code>disabled_weekdays</code></td><td><code>[]</code></td><td>ปิดวันในสัปดาห์</td><td><code>disabled_weekdays: [0, 6]</code></td></tr>
-                  <tr><td><code>enabled_date</code></td><td><code>null</code></td><td>function whitelist วันที่</td><td><code>enabled_date: function (date) { return date.getDay() !== 0; }</code></td></tr>
-                  <tr><td><code>disabled_date</code></td><td><code>null</code></td><td>function blacklist วันที่</td><td><code>disabled_date: function (date) { return date.getDay() === 3; }</code></td></tr>
-                  <tr><td><code>on_open</code></td><td><code>null</code></td><td>callback ตอนเปิด picker</td><td><code>on_open: function (detail) { console.log(detail.value); }</code></td></tr>
-                  <tr><td><code>on_close</code></td><td><code>null</code></td><td>callback ตอนปิด picker</td><td><code>on_close: function (detail) { console.log(detail.value); }</code></td></tr>
-                  <tr><td><code>on_select</code></td><td><code>null</code></td><td>callback ตอนผู้ใช้เลือกค่า</td><td><code>on_select: function (detail) { console.log(detail.display_value); }</code></td></tr>
-                  <tr><td><code>on_change</code></td><td><code>null</code></td><td>callback ตอนค่าใน input เปลี่ยน</td><td><code>on_change: function (detail) { console.log(detail.value); }</code></td></tr>
                 </tbody>
               </table>
             </div>
+
+            <p class="small text-body-secondary mb-4">callback และ function options อย่าง <code>on_change</code>, <code>enabled_date</code>, <code>disabled_date</code>, <code>render_cell_date</code> แยกไว้ด้านล่าง เพื่อไม่ให้ปนกับ option ปกติ</p>
 
             <h3 class="h5 mb-3">Callbacks</h3>
             <div class="table-responsive mb-4">
@@ -1392,11 +1461,13 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr><td><code>enabled_date(candidate_date)</code></td><td>whitelist วันที่ที่เลือกได้</td><td><code>true</code> เพื่ออนุญาตวันนั้น</td><td><code>enabled_date: function (date) { return date.getDay() !== 0; }</code></td></tr>
-                  <tr><td><code>disabled_date(candidate_date)</code></td><td>blacklist วันที่ที่เลือกไม่ได้</td><td><code>true</code> เพื่อปิดวันนั้น</td><td><code>disabled_date: function (date) { return date.getDate() === 13; }</code></td></tr>
+                  <tr><td><code>enabled_date(candidate_date)</code></td><td>กำหนดว่าวันไหน "เลือกได้เท่านั้น"</td><td><code>true</code> เพื่ออนุญาตวันนั้น</td><td><code>enabled_date: function (date) { return date.getDay() !== 0; }</code></td></tr>
+                  <tr><td><code>disabled_date(candidate_date)</code></td><td>กำหนดว่าวันไหนต้องปิดไม่ให้เลือก</td><td><code>true</code> เพื่อปิดวันนั้น</td><td><code>disabled_date: function (date) { return date.getDate() === 13; }</code></td></tr>
+                  <tr><td><code>render_cell_date(detail)</code></td><td>กำหนด text/HTML ภายใน day cell แต่ละช่อง</td><td>HTML string หรือ text ที่อยากให้แสดง</td><td><code>render_cell_date: function (detail) { return "&lt;span&gt;" + detail.day + "&lt;/span&gt;"; }</code></td></tr>
                 </tbody>
               </table>
             </div>
+            <p class="small text-body-secondary mt-3 mb-0"><code>render_cell_date(detail)</code> จะถูกเรียกทุกครั้งที่ render ปฏิทิน และใน <code>detail</code> จะมีข้อมูลอย่าง <code>date</code>, <code>day</code>, <code>display_year</code>, <code>is_today</code>, <code>is_selected</code> ให้ใช้ตัดสินใจง่ายขึ้น</p>
           </div>
         </div>
       </article>
@@ -1407,8 +1478,8 @@
     </p>
   </main>
 
-  <script src="../dist/mangopicker.js?v=1.0.0"></script>
-  <script src="../dist/i18n/th.js?v=1.0.0"></script>
+  <script src="../dist/mangopicker.js?v=0.1.0"></script>
+  <script src="../dist/i18n/th.js?v=0.1.0"></script>
   <script>
     (function () {
       function normalize_code_block(raw_code) {
@@ -1559,6 +1630,14 @@
         });
 
         window.mangoPicker.init({
+          selector: "#demo-buddhist-display-date",
+          language: "th",
+          format: "Y-m-d",
+          buddha: true,
+          buddha_input: true
+        });
+
+        window.mangoPicker.init({
           selector: "#demo-datetime",
           language: "th",
           format: "Y-m-d H:i"
@@ -1581,7 +1660,7 @@
         window.mangoPicker.init({
           selector: "#demo-time-range",
           format: "H:i",
-          range: true,
+          range_time: true,
           range_separator: " - ",
           minute_step: 30
         });
@@ -1688,6 +1767,27 @@
 
         window.mangoPicker.init({
           selector: "#demo-function-options"
+        });
+
+        window.mangoPicker.init({
+          selector: "#demo-render-cell",
+          language: "th",
+          format: "Y-m-d",
+          render_cell_date: function (detail) {
+            var note = "";
+
+            if (detail.date.getDay() === 6) {
+              note = "SALE";
+            } else if (detail.date.getDay() === 0) {
+              note = "OFF";
+            }
+
+            if (!note) {
+              return '<span>' + detail.day + "</span>";
+            }
+
+            return '<span style="display:block;line-height:1.05;"><strong>' + detail.day + '</strong><small style="display:block;font-size:10px;">' + note + "</small></span>";
+          }
         });
 
         var callback_log_element = document.getElementById("demo-callback-log");

@@ -9,8 +9,8 @@ const dist_directory = path.join(project_root, "dist");
 const dist_i18n_directory = path.join(dist_directory, "i18n");
 
 const shared_banner = {
-  js: "/*! mangoPicker v1.0.0 | MIT License */",
-  css: "/*! mangoPicker v1.0.0 | MIT License */"
+  js: "/*! mangoPicker v0.1.0 | MIT License */",
+  css: "/*! mangoPicker v0.1.0 | MIT License */"
 };
 
 await mkdir(dist_directory, { recursive: true });

@@ -75,11 +75,14 @@ export class MangoPickerInstance {
     this.time_cursor_hour = Number(this.options.default_hour) || 0;
     this.time_cursor_minute = Number(this.options.default_minute) || 0;
     this.time_cursor_second = Number(this.options.default_second) || 0;
+    this.time_range_values = { start: null, end: null };
+    this.time_range_active_slot = "start";
     this.touch_start_x = null;
     this.touch_start_y = null;
 
     this.setup_inputs();
     this.selected_dates = this.read_initial_selection();
+    this.sync_time_range_values_from_selected_dates();
     this.initialize_view_state();
     this.bind_events();
     this.panel_element = this.create_panel_element();
@@ -114,9 +117,15 @@ export class MangoPickerInstance {
     return null;
   }
 
+  should_use_buddha_input() {
+    return Boolean(this.options.buddha && this.options.buddha_input && this.format_details.has_year);
+  }
+
   setup_inputs() {
-    if (this.options.buddha) {
+    if (this.should_use_buddha_input()) {
       const mirror_input = document.createElement("input");
+      const source_style_text = this.source_input.getAttribute("style");
+
       mirror_input.type = "text";
       mirror_input.className = this.source_input.className;
       mirror_input.placeholder = this.source_input.getAttribute("placeholder") || "";
@@ -127,8 +136,6 @@ export class MangoPickerInstance {
       mirror_input.classList.add("mango-picker__field", "mango-picker__mirror-input");
       mirror_input.setAttribute("aria-haspopup", "dialog");
       mirror_input.setAttribute("aria-expanded", "false");
-
-      const source_style_text = this.source_input.getAttribute("style");
 
       if (source_style_text) {
         mirror_input.setAttribute("style", source_style_text);
@@ -144,18 +151,20 @@ export class MangoPickerInstance {
       } else {
         this.source_input.setAttribute("style", `${this.original_source_style};display:none;`);
       }
-    } else {
-      this.active_input = this.source_input;
-      this.active_input.classList.add("mango-picker__field");
 
-      if (this.options.readonly_input) {
-        this.active_input.readOnly = true;
-      }
-
-      this.active_input.setAttribute("autocomplete", "off");
-      this.active_input.setAttribute("aria-haspopup", "dialog");
-      this.active_input.setAttribute("aria-expanded", "false");
+      return;
     }
+
+    this.active_input = this.source_input;
+    this.active_input.classList.add("mango-picker__field");
+
+    if (this.options.readonly_input) {
+      this.active_input.readOnly = true;
+    }
+
+    this.active_input.setAttribute("autocomplete", "off");
+    this.active_input.setAttribute("aria-haspopup", "dialog");
+    this.active_input.setAttribute("aria-expanded", "false");
   }
 
   initialize_view_state() {
@@ -216,6 +225,7 @@ export class MangoPickerInstance {
       }
 
       const { action } = action_element.dataset;
+      const range_target = action_element.dataset.rangeTarget || null;
 
       switch (action) {
         case "shift-period":
@@ -240,19 +250,19 @@ export class MangoPickerInstance {
           this.select_year(Number(action_element.dataset.year));
           break;
         case "select-hour":
-          this.select_hour(Number(action_element.dataset.hour));
+          this.select_hour(Number(action_element.dataset.hour), range_target);
           break;
         case "select-minute":
-          this.select_minute(Number(action_element.dataset.minute));
+          this.select_minute(Number(action_element.dataset.minute), range_target);
           break;
         case "select-second":
-          this.select_second(Number(action_element.dataset.second));
+          this.select_second(Number(action_element.dataset.second), range_target);
           break;
         case "select-meridiem":
-          this.select_meridiem(action_element.dataset.period);
+          this.select_meridiem(action_element.dataset.period, range_target);
           break;
         case "set-today":
-          this.select_today();
+          this.select_today(range_target);
           break;
         case "clear-value":
           this.clear_value("clear");
@@ -384,6 +394,7 @@ export class MangoPickerInstance {
 
     const parsed_by_format = parse_value_by_format(input_value, this.options.format, {
       base_date: new Date(),
+      buddha: this.options.buddha,
       default_hour: this.options.default_hour,
       default_minute: this.options.default_minute,
       default_second: this.options.default_second
@@ -405,11 +416,49 @@ export class MangoPickerInstance {
   }
 
   is_range_mode() {
-    return Boolean(this.options.range) && !this.options.multiple;
+    return Boolean(this.options.range) && !this.options.multiple && !this.format_details.is_time_only;
+  }
+
+  is_time_range_mode() {
+    return Boolean(this.options.range_time) && this.format_details.is_time_only && !this.options.multiple;
+  }
+
+  has_range_selection() {
+    return this.is_range_mode() || this.is_time_range_mode();
+  }
+
+  get_time_range_slot_name(slot_name) {
+    return slot_name === "end" ? "end" : "start";
+  }
+
+  get_time_range_slot_date(slot_name) {
+    return this.time_range_values[this.get_time_range_slot_name(slot_name)] || null;
+  }
+
+  sync_time_range_values_from_selected_dates() {
+    if (!this.is_time_range_mode()) {
+      this.time_range_values = { start: null, end: null };
+      return;
+    }
+
+    this.time_range_values = {
+      start: this.selected_dates[0] ? clone_date(this.selected_dates[0]) : null,
+      end: this.selected_dates[1] ? clone_date(this.selected_dates[1]) : null
+    };
+  }
+
+  sync_selected_dates_from_time_range_values() {
+    if (!this.is_time_range_mode()) {
+      return;
+    }
+
+    this.selected_dates = [this.time_range_values.start, this.time_range_values.end]
+      .map((date_value) => clone_date(date_value))
+      .filter(Boolean);
   }
 
   get_output_separator() {
-    if (this.is_range_mode()) {
+    if (this.has_range_selection()) {
       return this.options.range_separator;
     }
 
@@ -417,7 +466,7 @@ export class MangoPickerInstance {
   }
 
   split_input_values(raw_value) {
-    if (this.is_range_mode()) {
+    if (this.has_range_selection()) {
       return split_range_values(raw_value, this.options.range_separator);
     }
 
@@ -432,6 +481,10 @@ export class MangoPickerInstance {
     const safe_dates = next_dates
       .map((date_value) => clone_date(date_value))
       .filter(Boolean);
+
+    if (this.is_time_range_mode()) {
+      return safe_dates.slice(0, 2);
+    }
 
     if (this.is_range_mode()) {
       if (safe_dates.length <= 1) {
@@ -450,6 +503,16 @@ export class MangoPickerInstance {
   }
 
   get_primary_selected_date() {
+    if (this.is_time_range_mode()) {
+      const active_date = this.get_time_range_slot_date(this.time_range_active_slot);
+
+      if (active_date) {
+        return clone_date(active_date);
+      }
+
+      return clone_date(this.time_range_values.end || this.time_range_values.start || null);
+    }
+
     if (!this.selected_dates.length) {
       return null;
     }
@@ -462,6 +525,13 @@ export class MangoPickerInstance {
   }
 
   get_range_bounds() {
+    if (this.is_time_range_mode()) {
+      return {
+        start_date: this.time_range_values.start ? clone_date(this.time_range_values.start) : null,
+        end_date: this.time_range_values.end ? clone_date(this.time_range_values.end) : null
+      };
+    }
+
     if (!this.is_range_mode() || !this.selected_dates.length) {
       return { start_date: null, end_date: null };
     }
@@ -473,6 +543,10 @@ export class MangoPickerInstance {
   }
 
   is_complete_range() {
+    if (this.is_time_range_mode()) {
+      return Boolean(this.time_range_values.start && this.time_range_values.end);
+    }
+
     return this.is_range_mode() && this.selected_dates.length === 2;
   }
 
@@ -481,10 +555,22 @@ export class MangoPickerInstance {
   }
 
   get_values() {
+    if (this.is_time_range_mode()) {
+      return [this.time_range_values.start, this.time_range_values.end]
+        .filter(Boolean)
+        .map((date_value) => this.get_selection_key(date_value));
+    }
+
     return this.selected_dates.map((date_value) => this.get_selection_key(date_value));
   }
 
   get_display_values() {
+    if (this.is_time_range_mode()) {
+      return [this.time_range_values.start, this.time_range_values.end]
+        .filter(Boolean)
+        .map((date_value) => this.get_display_value(date_value));
+    }
+
     return this.selected_dates.map((date_value) => this.get_display_value(date_value));
   }
 
@@ -493,7 +579,7 @@ export class MangoPickerInstance {
 
     if (Array.isArray(next_value)) {
       input_list = next_value;
-    } else if (typeof next_value === "string" && (this.options.multiple || this.is_range_mode())) {
+    } else if (typeof next_value === "string" && (this.options.multiple || this.has_range_selection())) {
       input_list = this.split_input_values(next_value);
     } else if (next_value !== null && next_value !== undefined && next_value !== "") {
       input_list = [next_value];
@@ -504,6 +590,7 @@ export class MangoPickerInstance {
       .filter(Boolean);
 
     this.selected_dates = this.normalize_selected_dates(parsed_dates);
+    this.sync_time_range_values_from_selected_dates();
     this.range_hover_date = null;
     this.view_date = clone_date(this.selected_dates[this.selected_dates.length - 1]) || new Date();
     this.sync_time_cursor_from_date(this.get_primary_selected_date());
@@ -587,14 +674,14 @@ export class MangoPickerInstance {
       } else {
         this.source_input.setAttribute("style", this.original_source_style);
       }
-    } else {
-      this.source_input.readOnly = this.original_source_readonly;
+    }
 
-      if (this.original_source_autocomplete === null) {
-        this.source_input.removeAttribute("autocomplete");
-      } else {
-        this.source_input.setAttribute("autocomplete", this.original_source_autocomplete);
-      }
+    this.source_input.readOnly = this.original_source_readonly;
+
+    if (this.original_source_autocomplete === null) {
+      this.source_input.removeAttribute("autocomplete");
+    } else {
+      this.source_input.setAttribute("autocomplete", this.original_source_autocomplete);
     }
 
     this.source_input.removeAttribute("data-mangopicker-role");
@@ -609,13 +696,17 @@ export class MangoPickerInstance {
     const input_rect = this.active_input.getBoundingClientRect();
     const panel_element = this.panel_element;
     const viewport_padding = 12;
-    const time_column_count = 2 + (this.format_details.has_second ? 1 : 0) + (this.uses_12_hour_clock() ? 1 : 0);
+    const time_column_count = this.get_time_column_count();
+    const time_panel_count = this.is_time_range_mode() ? 2 : 1;
+    const time_panel_width = time_column_count * 84 + 48;
     const picker_minimum_width = this.format_details.is_time_only
-      ? Math.max(260, time_column_count * 86)
+      ? this.is_time_range_mode()
+        ? Math.max(420, time_panel_count * time_panel_width + (time_panel_count - 1) * 12)
+        : Math.max(260, time_panel_count * time_panel_width)
       : this.format_details.has_time
         ? Math.max(380, 260 + time_column_count * 64)
         : 280;
-    const minimum_width = Math.max(input_rect.width, picker_minimum_width);
+    const minimum_width = Math.min(Math.max(input_rect.width, picker_minimum_width), window.innerWidth - viewport_padding * 2);
 
     panel_element.style.minWidth = `${minimum_width}px`;
     panel_element.style.zIndex = String(this.options.z_index);
@@ -641,7 +732,7 @@ export class MangoPickerInstance {
   }
 
   needs_apply() {
-    return this.format_details.has_time && !this.options.multiple && !this.is_range_mode();
+    return this.format_details.has_time && !this.options.multiple && !this.has_range_selection();
   }
 
   sync_time_cursor_from_date(date_value) {
@@ -655,6 +746,63 @@ export class MangoPickerInstance {
     this.time_cursor_hour = date_value.getHours();
     this.time_cursor_minute = date_value.getMinutes();
     this.time_cursor_second = date_value.getSeconds();
+  }
+
+  get_time_column_count() {
+    let time_column_count = 0;
+
+    if (this.format_details.has_hour || (!this.format_details.has_minute && !this.format_details.has_second)) {
+      time_column_count += 1;
+    }
+
+    if (this.format_details.has_minute) {
+      time_column_count += 1;
+    }
+
+    if (this.format_details.has_second) {
+      time_column_count += 1;
+    }
+
+    if (this.uses_12_hour_clock()) {
+      time_column_count += 1;
+    }
+
+    return time_column_count;
+  }
+
+  get_default_time_date() {
+    const now_date = new Date();
+
+    return create_local_date(
+      now_date.getFullYear(),
+      now_date.getMonth(),
+      now_date.getDate(),
+      Number(this.options.default_hour) || 0,
+      Number(this.options.default_minute) || 0,
+      Number(this.options.default_second) || 0
+    );
+  }
+
+  get_time_range_reference_date(slot_name) {
+    return clone_date(this.get_time_range_slot_date(slot_name)) || this.get_default_time_date();
+  }
+
+  get_time_panel_state(slot_name = null) {
+    if (this.is_time_range_mode() && slot_name) {
+      const reference_date = this.get_time_range_reference_date(slot_name);
+
+      return {
+        hour: reference_date.getHours(),
+        minute: reference_date.getMinutes(),
+        second: reference_date.getSeconds()
+      };
+    }
+
+    return {
+      hour: this.time_cursor_hour,
+      minute: this.time_cursor_minute,
+      second: this.time_cursor_second
+    };
   }
 
   reset_draft_state() {
@@ -712,6 +860,19 @@ export class MangoPickerInstance {
     );
   }
 
+  compose_time_range_candidate(slot_name, overrides = {}) {
+    const reference_date = this.get_time_range_reference_date(slot_name);
+
+    return create_local_date(
+      reference_date.getFullYear(),
+      reference_date.getMonth(),
+      reference_date.getDate(),
+      overrides.hour ?? reference_date.getHours(),
+      overrides.minute ?? reference_date.getMinutes(),
+      overrides.second ?? reference_date.getSeconds()
+    );
+  }
+
   compose_candidate_date(overrides = {}) {
     const reference_date = this.draft_date || this.selected_dates[0] || this.view_date || new Date();
     let year_value = overrides.year ?? reference_date.getFullYear();
@@ -739,7 +900,7 @@ export class MangoPickerInstance {
     const raw_values = this.get_values();
     const display_values = this.get_display_values();
     const output_separator = this.get_output_separator();
-    const has_multi_output = this.options.multiple || this.is_range_mode();
+    const has_multi_output = this.options.multiple || this.has_range_selection();
     const raw_output = has_multi_output ? raw_values.join(output_separator) : raw_values[0] || "";
     const display_output = has_multi_output ? display_values.join(output_separator) : display_values[0] || "";
 
@@ -747,9 +908,10 @@ export class MangoPickerInstance {
 
     if (this.display_input) {
       this.display_input.value = display_output;
-    } else {
-      this.active_input.value = raw_output;
+      return;
     }
+
+    this.active_input.value = raw_output;
   }
 
   emit_native_change_events() {
@@ -764,6 +926,10 @@ export class MangoPickerInstance {
 
   build_detail(source) {
     const { start_date, end_date } = this.get_range_bounds();
+    const display_values = this.get_display_values();
+    const display_output = this.options.multiple || this.has_range_selection()
+      ? display_values.join(this.get_output_separator())
+      : display_values[0] || "";
 
     return {
       instance: this,
@@ -775,12 +941,14 @@ export class MangoPickerInstance {
       format: this.options.format,
       language: this.options.language,
       buddha: this.options.buddha,
-      range: this.is_range_mode(),
+      buddha_input: this.should_use_buddha_input(),
+      range: this.has_range_selection(),
+      range_time: this.is_time_range_mode(),
       multiple: this.options.multiple,
       value: this.get_value(),
       values: this.get_values(),
-      display_value: this.display_input ? this.display_input.value : this.get_value(),
-      display_values: this.get_display_values(),
+      display_value: display_output,
+      display_values,
       dates: this.selected_dates.map((date_value) => clone_date(date_value)),
       range_start: start_date ? clone_date(start_date) : null,
       range_end: end_date ? clone_date(end_date) : null,
@@ -1162,6 +1330,7 @@ export class MangoPickerInstance {
 
   commit_selection(next_dates, source, should_close = false) {
     this.selected_dates = this.normalize_selected_dates(next_dates);
+    this.sync_time_range_values_from_selected_dates();
     this.range_hover_date = null;
     this.view_date = clone_date(this.selected_dates[this.selected_dates.length - 1]) || clone_date(this.view_date) || new Date();
     this.sync_time_cursor_from_date(this.get_primary_selected_date());
@@ -1174,6 +1343,26 @@ export class MangoPickerInstance {
     if (should_close && this.options.close_on_select) {
       this.close();
     }
+  }
+
+  update_time_range_selection(slot_name, candidate_date, source) {
+    const normalized_slot = this.get_time_range_slot_name(slot_name);
+    const normalized_candidate = clone_date(candidate_date);
+
+    if (!normalized_candidate) {
+      return;
+    }
+
+    this.time_range_active_slot = normalized_slot;
+    this.time_range_values[normalized_slot] = normalized_candidate;
+    this.sync_selected_dates_from_time_range_values();
+    this.view_date = clone_date(normalized_candidate) || clone_date(this.view_date) || new Date();
+    this.sync_time_cursor_from_date(normalized_candidate);
+    this.reset_draft_state();
+    this.refresh_input_value();
+    this.render();
+    this.notify_select(source);
+    this.notify_change(source);
   }
 
   toggle_multiple_selection(candidate_date, source) {
@@ -1202,6 +1391,7 @@ export class MangoPickerInstance {
     }
 
     this.selected_dates = [next_date];
+    this.sync_time_range_values_from_selected_dates();
     this.view_date = clone_date(next_date);
     this.sync_time_cursor_from_date(next_date);
     this.reset_draft_state();
@@ -1216,6 +1406,7 @@ export class MangoPickerInstance {
 
   clear_value(source = "clear") {
     this.selected_dates = [];
+    this.time_range_values = { start: null, end: null };
     this.draft_date = null;
     this.range_hover_date = null;
     this.sync_time_cursor_from_date(null);
@@ -1367,7 +1558,14 @@ export class MangoPickerInstance {
     return this.draft_date || this.get_primary_selected_date() || this.find_available_base_date();
   }
 
-  select_hour(hour_value) {
+  select_hour(hour_value, slot_name = null) {
+    if (this.is_time_range_mode()) {
+      const normalized_slot = this.get_time_range_slot_name(slot_name || this.time_range_active_slot);
+      const candidate_date = this.compose_time_range_candidate(normalized_slot, { hour: hour_value });
+      this.update_time_range_selection(normalized_slot, candidate_date, "time");
+      return;
+    }
+
     this.time_cursor_hour = hour_value;
     const reference_date = this.get_time_reference_date();
     const candidate_date = this.compose_candidate_date({
@@ -1393,7 +1591,14 @@ export class MangoPickerInstance {
     this.render();
   }
 
-  select_minute(minute_value) {
+  select_minute(minute_value, slot_name = null) {
+    if (this.is_time_range_mode()) {
+      const normalized_slot = this.get_time_range_slot_name(slot_name || this.time_range_active_slot);
+      const candidate_date = this.compose_time_range_candidate(normalized_slot, { minute: minute_value });
+      this.update_time_range_selection(normalized_slot, candidate_date, "time");
+      return;
+    }
+
     this.time_cursor_minute = minute_value;
     const reference_date = this.get_time_reference_date();
     const candidate_date = this.compose_candidate_date({
@@ -1419,7 +1624,14 @@ export class MangoPickerInstance {
     this.render();
   }
 
-  select_second(second_value) {
+  select_second(second_value, slot_name = null) {
+    if (this.is_time_range_mode()) {
+      const normalized_slot = this.get_time_range_slot_name(slot_name || this.time_range_active_slot);
+      const candidate_date = this.compose_time_range_candidate(normalized_slot, { second: second_value });
+      this.update_time_range_selection(normalized_slot, candidate_date, "time");
+      return;
+    }
+
     this.time_cursor_second = second_value;
     const reference_date = this.get_time_reference_date();
     const candidate_date = this.compose_candidate_date({
@@ -1445,8 +1657,19 @@ export class MangoPickerInstance {
     this.render();
   }
 
-  select_meridiem(period_value) {
+  select_meridiem(period_value, slot_name = null) {
     const normalized_period = period_value === "PM" ? "PM" : "AM";
+
+    if (this.is_time_range_mode()) {
+      const normalized_slot = this.get_time_range_slot_name(slot_name || this.time_range_active_slot);
+      const slot_date = this.get_time_range_reference_date(normalized_slot);
+      const hour_12_value = slot_date.getHours() % 12;
+      const hour_value = normalized_period === "PM" ? hour_12_value + 12 : hour_12_value;
+      const candidate_date = this.compose_time_range_candidate(normalized_slot, { hour: hour_value });
+      this.update_time_range_selection(normalized_slot, candidate_date, "time");
+      return;
+    }
+
     const hour_12_value = this.time_cursor_hour % 12;
     this.time_cursor_hour = normalized_period === "PM" ? hour_12_value + 12 : hour_12_value;
     const reference_date = this.get_time_reference_date();
@@ -1465,8 +1688,20 @@ export class MangoPickerInstance {
     this.render();
   }
 
-  select_today() {
+  select_today(slot_name = null) {
     const now_date = new Date();
+
+    if (this.is_time_range_mode()) {
+      const normalized_slot = this.get_time_range_slot_name(slot_name || this.time_range_active_slot);
+      const candidate_date = this.compose_time_range_candidate(normalized_slot, {
+        hour: now_date.getHours(),
+        minute: now_date.getMinutes(),
+        second: now_date.getSeconds()
+      });
+      this.update_time_range_selection(normalized_slot, candidate_date, "today");
+      return;
+    }
+
     let candidate_date = create_local_date(
       now_date.getFullYear(),
       now_date.getMonth(),
@@ -1570,6 +1805,48 @@ export class MangoPickerInstance {
     return this.language.week_start || 0;
   }
 
+  get_day_cell_content_markup(cell_detail) {
+    const default_markup = `<span>${cell_detail.day}</span>`;
+
+    if (typeof this.options.render_cell_date !== "function") {
+      return default_markup;
+    }
+
+    try {
+      const rendered_markup = this.options.render_cell_date({
+        instance: this,
+        date: clone_date(cell_detail.date),
+        day: cell_detail.day,
+        month: cell_detail.month,
+        month_index: cell_detail.month_index,
+        year: cell_detail.year,
+        display_year: this.get_display_year(cell_detail.year),
+        label: String(cell_detail.day),
+        is_today: cell_detail.is_today,
+        is_selected: cell_detail.is_selected,
+        is_other_month: cell_detail.is_other_month,
+        is_disabled: cell_detail.is_disabled,
+        is_range_start: cell_detail.is_range_start,
+        is_range_end: cell_detail.is_range_end,
+        is_in_range: cell_detail.is_in_range,
+        is_range_preview: cell_detail.is_range_preview,
+        is_range_hover: cell_detail.is_range_hover
+      });
+
+      if (rendered_markup === null || rendered_markup === undefined || rendered_markup === false) {
+        return default_markup;
+      }
+
+      return String(rendered_markup);
+    } catch (error) {
+      if (typeof console !== "undefined" && typeof console.error === "function") {
+        console.error("mangoPicker render_cell_date error", error);
+      }
+
+      return default_markup;
+    }
+  }
+
   get_day_view_markup() {
     const month_start = start_of_month(this.view_date);
     const week_start = this.get_week_start();
@@ -1599,6 +1876,22 @@ export class MangoPickerInstance {
         day: current_date.getDate()
       });
       const is_disabled = !is_date_allowed(candidate_date, this.rules);
+      const cell_content = this.get_day_cell_content_markup({
+        date: current_date,
+        day: current_date.getDate(),
+        month: current_date.getMonth() + 1,
+        month_index: current_date.getMonth(),
+        year: current_date.getFullYear(),
+        is_today,
+        is_selected,
+        is_other_month,
+        is_disabled,
+        is_range_start,
+        is_range_end,
+        is_in_range,
+        is_range_preview,
+        is_range_hover
+      });
       const class_names = [
         "mango-picker__cell",
         current_date_class_name,
@@ -1631,7 +1924,7 @@ export class MangoPickerInstance {
           ${is_disabled ? 'aria-disabled="true"' : ""}
           ${is_disabled ? "disabled" : ""}
         >
-          <span>${current_date.getDate()}</span>
+          ${cell_content}
         </button>
       `);
     }
@@ -1703,10 +1996,10 @@ export class MangoPickerInstance {
     return `<div class="mango-picker__tiles">${year_buttons}</div>`;
   }
 
-  get_hour_options() {
+  get_hour_options(selected_hour = this.time_cursor_hour) {
     if (this.uses_12_hour_clock()) {
-      const period_offset = this.time_cursor_hour >= 12 ? 12 : 0;
-      const selected_hour_12 = this.time_cursor_hour % 12 || 12;
+      const period_offset = selected_hour >= 12 ? 12 : 0;
+      const selected_hour_12 = selected_hour % 12 || 12;
       const safe_step = Math.max(1, Number(this.options.hour_step) || 1);
       const hour_12_options = [];
 
@@ -1722,40 +2015,46 @@ export class MangoPickerInstance {
       return hour_12_options.map((hour_value) => (hour_value === 12 ? period_offset : period_offset + hour_value));
     }
 
-    return this.build_step_options(24, this.options.hour_step, this.time_cursor_hour);
+    return this.build_step_options(24, this.options.hour_step, selected_hour);
   }
 
-  get_minute_options() {
-    return this.build_step_options(60, this.options.minute_step, this.time_cursor_minute);
+  get_minute_options(selected_minute = this.time_cursor_minute) {
+    return this.build_step_options(60, this.options.minute_step, selected_minute);
   }
 
-  get_second_options() {
-    return this.build_step_options(60, this.options.second_step, this.time_cursor_second);
+  get_second_options(selected_second = this.time_cursor_second) {
+    return this.build_step_options(60, this.options.second_step, selected_second);
   }
 
-  get_time_panel_markup() {
-    const hour_buttons = this.get_hour_options()
+  get_time_panel_markup(slot_name = null) {
+    const time_state = this.get_time_panel_state(slot_name);
+    const selected_hour = time_state.hour;
+    const selected_minute = time_state.minute;
+    const selected_second = time_state.second;
+    const normalized_slot = slot_name ? this.get_time_range_slot_name(slot_name) : null;
+    const range_target_attribute = normalized_slot ? ` data-range-target="${normalized_slot}"` : "";
+    const hour_buttons = this.get_hour_options(selected_hour)
       .map((hour_value) => {
-        const class_names = ["mango-picker__time-option", this.time_cursor_hour === hour_value ? "is-selected" : ""]
+        const class_names = ["mango-picker__time-option", selected_hour === hour_value ? "is-selected" : ""]
           .filter(Boolean)
           .join(" ");
 
         return `
-          <button type="button" class="${class_names}" data-action="select-hour" data-hour="${hour_value}" aria-selected="${this.time_cursor_hour === hour_value ? "true" : "false"}">
+          <button type="button" class="${class_names}" data-action="select-hour" data-hour="${hour_value}" aria-selected="${selected_hour === hour_value ? "true" : "false"}"${range_target_attribute}>
             ${this.get_hour_label(hour_value)}
           </button>
         `;
       })
       .join("");
 
-    const minute_buttons = this.get_minute_options()
+    const minute_buttons = this.get_minute_options(selected_minute)
       .map((minute_value) => {
-        const class_names = ["mango-picker__time-option", this.time_cursor_minute === minute_value ? "is-selected" : ""]
+        const class_names = ["mango-picker__time-option", selected_minute === minute_value ? "is-selected" : ""]
           .filter(Boolean)
           .join(" ");
 
         return `
-          <button type="button" class="${class_names}" data-action="select-minute" data-minute="${minute_value}" aria-selected="${this.time_cursor_minute === minute_value ? "true" : "false"}">
+          <button type="button" class="${class_names}" data-action="select-minute" data-minute="${minute_value}" aria-selected="${selected_minute === minute_value ? "true" : "false"}"${range_target_attribute}>
             ${pad_number(minute_value)}
           </button>
         `;
@@ -1783,14 +2082,14 @@ export class MangoPickerInstance {
     }
 
     if (this.format_details.has_second) {
-      const second_buttons = this.get_second_options()
+      const second_buttons = this.get_second_options(selected_second)
         .map((second_value) => {
-          const class_names = ["mango-picker__time-option", this.time_cursor_second === second_value ? "is-selected" : ""]
+          const class_names = ["mango-picker__time-option", selected_second === second_value ? "is-selected" : ""]
             .filter(Boolean)
             .join(" ");
 
           return `
-            <button type="button" class="${class_names}" data-action="select-second" data-second="${second_value}" aria-selected="${this.time_cursor_second === second_value ? "true" : "false"}">
+            <button type="button" class="${class_names}" data-action="select-second" data-second="${second_value}" aria-selected="${selected_second === second_value ? "true" : "false"}"${range_target_attribute}>
               ${pad_number(second_value)}
             </button>
           `;
@@ -1808,13 +2107,13 @@ export class MangoPickerInstance {
     if (this.uses_12_hour_clock()) {
       const meridiem_buttons = ["AM", "PM"]
         .map((period_value) => {
-          const is_selected = period_value === (this.time_cursor_hour >= 12 ? "PM" : "AM");
+          const is_selected = period_value === (selected_hour >= 12 ? "PM" : "AM");
           const class_names = ["mango-picker__time-option", is_selected ? "is-selected" : ""]
             .filter(Boolean)
             .join(" ");
 
           return `
-            <button type="button" class="${class_names}" data-action="select-meridiem" data-period="${period_value}" aria-selected="${is_selected ? "true" : "false"}">
+            <button type="button" class="${class_names}" data-action="select-meridiem" data-period="${period_value}" aria-selected="${is_selected ? "true" : "false"}"${range_target_attribute}>
               ${this.get_meridiem_label(period_value)}
             </button>
           `;
@@ -1836,9 +2135,27 @@ export class MangoPickerInstance {
     `;
   }
 
+  get_time_range_markup() {
+    const start_label = this.language.labels.start || "Start";
+    const end_label = this.language.labels.end || "End";
+
+    return `
+      <div class="mango-picker__time-range">
+        <div class="mango-picker__time-range-group ${this.time_range_active_slot === "start" ? "is-active" : ""}">
+          <div class="mango-picker__time-range-title">${start_label}</div>
+          ${this.get_time_panel_markup("start")}
+        </div>
+        <div class="mango-picker__time-range-group ${this.time_range_active_slot === "end" ? "is-active" : ""}">
+          <div class="mango-picker__time-range-title">${end_label}</div>
+          ${this.get_time_panel_markup("end")}
+        </div>
+      </div>
+    `;
+  }
+
   get_body_markup() {
     if (this.current_view === "time") {
-      return this.get_time_panel_markup();
+      return this.is_time_range_mode() ? this.get_time_range_markup() : this.get_time_panel_markup();
     }
 
     if (this.current_view === "month") {
@@ -1894,6 +2211,21 @@ export class MangoPickerInstance {
       `;
     }
 
+    if (this.is_time_range_mode()) {
+      const start_label = this.language.labels.start || "Start";
+      const end_label = this.language.labels.end || "End";
+      const start_value = this.time_range_values.start ? this.get_display_value(this.time_range_values.start) : this.language.labels.nothing_selected;
+      const end_value = this.time_range_values.end ? this.get_display_value(this.time_range_values.end) : this.language.labels.nothing_selected;
+
+      return `
+        <div class="mango-picker__summary">
+          <div class="mango-picker__summary-title">${this.language.labels.selected}</div>
+          <div class="mango-picker__summary-value">${start_label}: ${start_value}</div>
+          <div class="mango-picker__summary-value">${end_label}: ${end_value}</div>
+        </div>
+      `;
+    }
+
     const preview_date = this.needs_apply() ? this.draft_date || this.selected_dates[0] : this.selected_dates[0];
     const preview_value = preview_date ? this.get_display_value(preview_date) : this.language.labels.nothing_selected;
 
@@ -1907,10 +2239,11 @@ export class MangoPickerInstance {
 
   get_footer_markup() {
     const action_buttons = [];
+    const today_range_target_attribute = this.is_time_range_mode() ? ` data-range-target="${this.time_range_active_slot}"` : "";
 
     if (this.options.show_today_button) {
       action_buttons.push(`
-        <button type="button" class="mango-picker__action" data-action="set-today">
+        <button type="button" class="mango-picker__action" data-action="set-today"${today_range_target_attribute}>
           ${this.format_details.is_time_only ? this.language.labels.now : this.language.labels.today}
         </button>
       `);
