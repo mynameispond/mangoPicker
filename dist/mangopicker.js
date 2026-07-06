@@ -603,6 +603,8 @@ var mangoPicker = (() => {
     swipe_navigation: true,
     keyboard_navigation: true,
     animation: "slide",
+    min_range_days: null,
+    max_range_days: null,
     min_date: null,
     max_date: null,
     enabled_dates: [],
@@ -1711,6 +1713,21 @@ var mangoPicker = (() => {
       }
       return highlighted_dates.some((selected_date) => selected_date.getFullYear() === year_value);
     }
+    is_date_selectable_as_range_end(candidate_date) {
+      if (this.selected_dates.length !== 1) {
+        return true;
+      }
+      const first_date = this.selected_dates[0];
+      const diff_time = Math.abs(candidate_date.getTime() - first_date.getTime());
+      const diff_days = Math.round(diff_time / (1e3 * 60 * 60 * 24)) + 1;
+      if (this.options.min_range_days !== null && diff_days < this.options.min_range_days) {
+        return false;
+      }
+      if (this.options.max_range_days !== null && diff_days > this.options.max_range_days) {
+        return false;
+      }
+      return true;
+    }
     should_track_range_hover() {
       return this.is_range_mode() && this.current_view === "day" && this.selected_dates.length === 1;
     }
@@ -1730,6 +1747,9 @@ var mangoPicker = (() => {
     }
     get_range_preview_bounds() {
       if (!this.should_track_range_hover() || !this.range_hover_date) {
+        return { start_date: null, end_date: null };
+      }
+      if (!this.is_date_selectable_as_range_end(this.range_hover_date)) {
         return { start_date: null, end_date: null };
       }
       const next_dates = this.normalize_selected_dates([this.selected_dates[0], this.range_hover_date]);
@@ -1817,7 +1837,9 @@ var mangoPicker = (() => {
         return [];
       }
       if (this.selected_dates.length === 1) {
-        return this.normalize_selected_dates([this.selected_dates[0], normalized_candidate]);
+        if (this.is_date_selectable_as_range_end(normalized_candidate)) {
+          return this.normalize_selected_dates([this.selected_dates[0], normalized_candidate]);
+        }
       }
       return [normalized_candidate];
     }
@@ -2280,6 +2302,8 @@ var mangoPicker = (() => {
           day: current_date.getDate()
         });
         const is_disabled = !is_date_allowed(candidate_date, this.rules);
+        const is_range_limit_disabled = !is_disabled && this.is_range_mode() && this.selected_dates.length === 1 && !this.is_date_selectable_as_range_end(candidate_date);
+        const is_cell_disabled = is_disabled || is_range_limit_disabled;
         const cell_content = this.get_day_cell_content_markup({
           date: current_date,
           day: current_date.getDate(),
@@ -2289,7 +2313,7 @@ var mangoPicker = (() => {
           is_today,
           is_selected,
           is_other_month,
-          is_disabled,
+          is_disabled: is_cell_disabled,
           is_range_start,
           is_range_end,
           is_in_range,
@@ -2308,7 +2332,7 @@ var mangoPicker = (() => {
           is_in_range || is_range_preview ? "is-in-range" : "",
           is_range_preview ? "is-range-preview" : "",
           is_range_hover ? "is-range-hover" : "",
-          is_disabled ? "is-disabled" : ""
+          is_cell_disabled ? "is-disabled" : ""
         ].filter(Boolean).join(" ");
         day_cells.push(`
         <button
@@ -2322,7 +2346,7 @@ var mangoPicker = (() => {
           aria-label="${format_date_value(current_date, "Y-m-d")}"
           aria-selected="${is_aria_selected ? "true" : "false"}"
           ${is_today ? 'aria-current="date"' : ""}
-          ${is_disabled ? 'aria-disabled="true"' : ""}
+          ${is_cell_disabled ? 'aria-disabled="true"' : ""}
           ${is_disabled ? "disabled" : ""}
         >
           ${cell_content}
@@ -2761,7 +2785,9 @@ var mangoPicker = (() => {
       "default_hour",
       "default_minute",
       "default_second",
-      "week_start"
+      "week_start",
+      "min_range_days",
+      "max_range_days"
     ]);
     const list_options = /* @__PURE__ */ new Set(["enabled_dates", "disabled_dates", "enabled_ranges", "disabled_ranges"]);
     const function_options = /* @__PURE__ */ new Set(["enabled_date", "disabled_date", "render_cell_date", "on_open", "on_close", "on_select", "on_change"]);

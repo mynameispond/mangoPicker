@@ -361,6 +361,8 @@ window.mangoPicker.init({
 | `data-mangopicker-swipe-navigation` | `swipe_navigation` | `true` |
 | `data-mangopicker-keyboard-navigation` | `keyboard_navigation` | `true` |
 | `data-mangopicker-animation` | `animation` | `scale` |
+| `data-mangopicker-min-range-days` | `min_range_days` | `3` |
+| `data-mangopicker-max-range-days` | `max_range_days` | `7` |
 | `data-mangopicker-min-date` | `min_date` | `2026-01-01` |
 | `data-mangopicker-max-date` | `max_date` | `2026-12-31` |
 | `data-mangopicker-enabled-dates` | `enabled_dates` | `2026-04-01,2026-04-02` |
@@ -546,6 +548,8 @@ picker.get_instance(1);
 | `swipe_navigation` | `true` | ปัดซ้าย/ขวาบนมือถือเพื่อเปลี่ยนเดือนหรือปี | `swipe_navigation: false` |
 | `keyboard_navigation` | `true` | ใช้ arrow keys, Enter, Esc ใน picker | `keyboard_navigation: false` |
 | `animation` | `"slide"` | รูปแบบอนิเมชันตอนเปิด-ปิด (`slide`, `scale`, `fade`, `none`) | `animation: "scale"` |
+| `min_range_days` | `null` | จำนวนวันที่เลือกได้ต่ำสุดในโหมดช่วงปฏิทิน (เช่น ขั้นต่ำ 3 วัน) | `min_range_days: 3` |
+| `max_range_days` | `null` | จำนวนวันที่เลือกได้สูงสุดในโหมดช่วงปฏิทิน (เช่น ไม่เกิน 7 วัน) | `max_range_days: 7` |
 | `min_date` | `null` | วันที่ต่ำสุดที่เลือกได้ | `min_date: "2026-01-01"` |
 | `max_date` | `null` | วันที่สูงสุดที่เลือกได้ | `max_date: "2026-12-31"` |
 | `enabled_dates` | `[]` | รายการวันที่อนุญาตให้เลือกเท่านั้น | `enabled_dates: ["2026-04-01"]` |

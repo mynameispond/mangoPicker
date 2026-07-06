@@ -144,7 +144,9 @@ function read_data_options(element) {
     "default_hour",
     "default_minute",
     "default_second",
-    "week_start"
+    "week_start",
+    "min_range_days",
+    "max_range_days"
   ]);
   const list_options = new Set(["enabled_dates", "disabled_dates", "enabled_ranges", "disabled_ranges"]);
   const function_options = new Set(["enabled_date", "disabled_date", "render_cell_date", "on_open", "on_close", "on_select", "on_change"]);
