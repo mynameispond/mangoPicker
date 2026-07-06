@@ -80,6 +80,7 @@ export class MangoPickerInstance {
     this.touch_start_x = null;
     this.touch_start_y = null;
     this.close_timeout_id = null;
+    this.is_focusing_programmatically = false;
 
     this.setup_inputs();
     this.selected_dates = this.read_initial_selection();
@@ -190,6 +191,9 @@ export class MangoPickerInstance {
 
   bind_events() {
     this.handle_input_open = () => {
+      if (this.is_focusing_programmatically) {
+        return;
+      }
       this.open();
     };
 
@@ -764,7 +768,11 @@ export class MangoPickerInstance {
     // Return focus to active input if the focus was currently inside the panel
     const active_element = document.activeElement;
     if (active_element && this.panel_element.contains(active_element)) {
+      this.is_focusing_programmatically = true;
       this.active_input.focus();
+      setTimeout(() => {
+        this.is_focusing_programmatically = false;
+      }, 50);
     }
 
     this.reset_draft_state();
