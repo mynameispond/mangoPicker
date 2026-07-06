@@ -12,7 +12,7 @@ export function init(user_options = {}) {
 
 export { register_language };
 
-export const version = "0.1.0";
+export const version = "1.0.0";
 
 if (typeof window !== "undefined") {
   window.mangoPicker = {

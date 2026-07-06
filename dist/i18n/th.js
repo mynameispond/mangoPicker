@@ -1,4 +1,4 @@
-/*! mangoPicker v0.1.0 | MIT License */
+/*! mangoPicker v1.0.0 | MIT License */
 (() => {
   // src/i18n/attach_language.js
   function attach_external_language(language_definition) {

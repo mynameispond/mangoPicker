@@ -1,4 +1,4 @@
-/*! mangoPicker v0.1.0 | MIT License */
+/*! mangoPicker v1.0.0 | MIT License */
 var mangoPicker = (() => {
   var __defProp = Object.defineProperty;
   var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
@@ -2952,7 +2952,7 @@ var mangoPicker = (() => {
     sync_global_languages();
     return create_picker_manager(user_options);
   }
-  var version = "0.1.0";
+  var version = "1.0.0";
   if (typeof window !== "undefined") {
     window.mangoPicker = {
       init,
