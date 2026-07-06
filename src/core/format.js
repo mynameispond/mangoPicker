@@ -17,70 +17,70 @@ const token_definitions = {
   },
   m: {
     group_name: "month_zero",
-    pattern: "(?<month_zero>0[1-9]|1[0-2])",
+    pattern: "(?<month_zero>0?[1-9]|1[0-2])",
     apply(parts, value) {
       parts.month_index = Number(value) - 1;
     }
   },
   n: {
     group_name: "month",
-    pattern: "(?<month>[1-9]|1[0-2])",
+    pattern: "(?<month>0?[1-9]|1[0-2])",
     apply(parts, value) {
       parts.month_index = Number(value) - 1;
     }
   },
   d: {
     group_name: "day_zero",
-    pattern: "(?<day_zero>0[1-9]|[12]\\d|3[01])",
+    pattern: "(?<day_zero>0?[1-9]|[12]\\d|3[01])",
     apply(parts, value) {
       parts.day = Number(value);
     }
   },
   j: {
     group_name: "day",
-    pattern: "(?<day>[1-9]|[12]\\d|3[01])",
+    pattern: "(?<day>0?[1-9]|[12]\\d|3[01])",
     apply(parts, value) {
       parts.day = Number(value);
     }
   },
   H: {
     group_name: "hour_zero",
-    pattern: "(?<hour_zero>[01]\\d|2[0-3])",
+    pattern: "(?<hour_zero>[0-1]?\\d|2[0-3])",
     apply(parts, value) {
       parts.hour = Number(value);
     }
   },
   G: {
     group_name: "hour",
-    pattern: "(?<hour>\\d|1\\d|2[0-3])",
+    pattern: "(?<hour>[0-1]?\\d|2[0-3])",
     apply(parts, value) {
       parts.hour = Number(value);
     }
   },
   h: {
     group_name: "hour_12_zero",
-    pattern: "(?<hour_12_zero>0[1-9]|1[0-2])",
+    pattern: "(?<hour_12_zero>0?[1-9]|1[0-2])",
     apply(parts, value) {
       parts.hour_12 = Number(value);
     }
   },
   g: {
     group_name: "hour_12",
-    pattern: "(?<hour_12>[1-9]|1[0-2])",
+    pattern: "(?<hour_12>0?[1-9]|1[0-2])",
     apply(parts, value) {
       parts.hour_12 = Number(value);
     }
   },
   i: {
     group_name: "minute",
-    pattern: "(?<minute>[0-5]\\d)",
+    pattern: "(?<minute>[0-5]?\\d)",
     apply(parts, value) {
       parts.minute = Number(value);
     }
   },
   s: {
     group_name: "second",
-    pattern: "(?<second>[0-5]\\d)",
+    pattern: "(?<second>[0-5]?\\d)",
     apply(parts, value) {
       parts.second = Number(value);
     }
@@ -217,8 +217,12 @@ export function parse_value_by_format(raw_value, format_string, options = {}) {
   let day_value = date_parts.day ?? base_date.getDate();
   let hour_value = date_parts.hour ?? options.default_hour ?? 0;
 
-  if (options.buddha && date_parts.year !== undefined && year_value >= 2400) {
-    year_value -= 543;
+  if (options.buddha && date_parts.year !== undefined) {
+    if (year_value >= 2400) {
+      year_value -= 543;
+    } else {
+      year_value -= 43;
+    }
   }
 
   if (date_parts.hour_12 !== undefined) {

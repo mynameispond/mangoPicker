@@ -97,7 +97,9 @@ export function normalize_availability_rules(options, fallback_format) {
     disabled_date: typeof (options.disabled_date || options.closed_date) === "function"
       ? options.disabled_date || options.closed_date
       : null,
-    disabled_weekdays: [...(options.disabled_weekdays || [])]
+    disabled_weekdays: (options.disabled_weekdays || [])
+      .map((day) => Number(day))
+      .filter((day) => !Number.isNaN(day))
   };
 }
 

@@ -7,9 +7,9 @@ import { resolve_language } from "./language_registry.js";
 let instance_counter = 0;
 const open_instances = new Set();
 
-function create_custom_event(event_name, detail) {
+function create_custom_event(event_name, detail, bubbles = true) {
   if (typeof CustomEvent === "function") {
-    return new CustomEvent(event_name, { bubbles: true, detail });
+    return new CustomEvent(event_name, { bubbles, detail });
   }
 
   return null;
@@ -79,6 +79,7 @@ export class MangoPickerInstance {
     this.time_range_active_slot = "start";
     this.touch_start_x = null;
     this.touch_start_y = null;
+    this.close_timeout_id = null;
 
     this.setup_inputs();
     this.selected_dates = this.read_initial_selection();
@@ -137,6 +138,19 @@ export class MangoPickerInstance {
       mirror_input.setAttribute("aria-haspopup", "dialog");
       mirror_input.setAttribute("aria-expanded", "false");
 
+      // Transfer required attribute to mirror input to prevent silent validation failure
+      if (this.source_input.required) {
+        mirror_input.required = true;
+        this.source_input.required = false;
+      }
+
+      // Transfer ID to mirror input so associated <label> elements focus the visible input
+      const original_id = this.source_input.id;
+      if (original_id) {
+        mirror_input.id = original_id;
+        this.source_input.id = `${original_id}__source`;
+      }
+
       if (source_style_text) {
         mirror_input.setAttribute("style", source_style_text);
       }
@@ -188,6 +202,32 @@ export class MangoPickerInstance {
       if (event.key === "Enter" || event.key === "ArrowDown") {
         event.preventDefault();
         this.open();
+        this.focus_active_element();
+      }
+    };
+
+    this.handle_input_change = () => {
+      const current_value = this.source_input.value;
+      const value_parts = this.split_input_values(current_value);
+      const parsed_dates = value_parts
+        .map((value_part) => this.parse_input_candidate(value_part))
+        .filter(Boolean);
+      
+      const normalized_next = this.normalize_selected_dates(parsed_dates);
+      
+      const is_same = normalized_next.length === this.selected_dates.length &&
+                      normalized_next.every((date_val, idx) => {
+                        const existing = this.selected_dates[idx];
+                        return existing && date_val.getTime() === existing.getTime();
+                      });
+      
+      if (!is_same) {
+        this.selected_dates = normalized_next;
+        this.sync_time_range_values_from_selected_dates();
+        this.view_date = clone_date(this.selected_dates[this.selected_dates.length - 1]) || new Date();
+        this.sync_time_cursor_from_date(this.get_primary_selected_date());
+        this.reset_draft_state();
+        this.render();
       }
     };
 
@@ -211,9 +251,16 @@ export class MangoPickerInstance {
       }
     };
 
+    let refresh_ticking = false;
     this.handle_window_refresh = () => {
-      if (this.is_open) {
-        this.position_panel();
+      if (this.is_open && !refresh_ticking) {
+        refresh_ticking = true;
+        requestAnimationFrame(() => {
+          if (this.is_open) {
+            this.position_panel();
+          }
+          refresh_ticking = false;
+        });
       }
     };
 
@@ -319,6 +366,12 @@ export class MangoPickerInstance {
         return;
       }
 
+      if (event.target.closest(".mango-picker__time-panel")) {
+        this.touch_start_x = null;
+        this.touch_start_y = null;
+        return;
+      }
+
       this.touch_start_x = event.touches[0].clientX;
       this.touch_start_y = event.touches[0].clientY;
     };
@@ -343,13 +396,43 @@ export class MangoPickerInstance {
     this.active_input.addEventListener("focus", this.handle_input_open);
     this.active_input.addEventListener("click", this.handle_input_open);
     this.active_input.addEventListener("keydown", this.handle_input_keydown);
+    this.source_input.addEventListener("change", this.handle_input_change);
+    this.source_input.addEventListener("input", this.handle_input_change);
+  }
+
+  focus_active_element() {
+    if (!this.panel_element) {
+      return;
+    }
+
+    if (this.current_view === "day") {
+      const target_date = this.selected_dates[0] || this.draft_date || new Date();
+      if (this.focus_day_button(target_date)) {
+        return;
+      }
+      const first_cell = this.panel_element.querySelector(".mango-picker__cell:not(:disabled)");
+      first_cell?.focus();
+    } else if (this.current_view === "month") {
+      const selected_tile = this.panel_element.querySelector(".mango-picker__tile.is-selected:not(:disabled)") ||
+                            this.panel_element.querySelector(".mango-picker__tile:not(:disabled)");
+      selected_tile?.focus();
+    } else if (this.current_view === "year") {
+      const selected_tile = this.panel_element.querySelector(".mango-picker__tile.is-selected:not(:disabled)") ||
+                            this.panel_element.querySelector(".mango-picker__tile:not(:disabled)");
+      selected_tile?.focus();
+    } else if (this.current_view === "time") {
+      const first_option = this.panel_element.querySelector(".mango-picker__time-option.is-selected:not(:disabled)") ||
+                           this.panel_element.querySelector(".mango-picker__time-option:not(:disabled)");
+      first_option?.focus();
+    }
   }
 
   create_panel_element() {
     const panel_element = document.createElement("div");
-    panel_element.className = this.is_inline_mode() ? "mango-picker is-inline" : "mango-picker";
+    panel_element.className = this.is_inline_mode() ? "mango-picker is-inline is-visible" : "mango-picker";
     panel_element.hidden = !this.is_inline_mode();
     panel_element.dataset.mangopickerId = this.instance_id;
+    panel_element.setAttribute("data-animation", this.options.animation || "slide");
     panel_element.setAttribute("role", "dialog");
     panel_element.setAttribute("aria-modal", "false");
     panel_element.addEventListener("click", this.handle_panel_click);
@@ -614,6 +697,12 @@ export class MangoPickerInstance {
       return;
     }
 
+    // Cancel any pending close transition
+    if (this.close_timeout_id) {
+      clearTimeout(this.close_timeout_id);
+      this.close_timeout_id = null;
+    }
+
     open_instances.forEach((instance) => {
       if (instance !== this) {
         instance.close();
@@ -624,15 +713,30 @@ export class MangoPickerInstance {
     this.is_open = true;
     this.language = resolve_language(this.options.language);
     this.rules = normalize_availability_rules(this.options, this.options.format);
+    
+    // Re-read value from input to sync with any external programmatic changes
+    this.selected_dates = this.read_initial_selection();
+    this.sync_time_range_values_from_selected_dates();
+    this.initialize_view_state();
+
     this.prepare_draft_state();
+    
+    this.render();
+    
     this.panel_element.hidden = false;
+    this.position_panel();
+    
+    // Force browser reflow to ensure the transition starting state is registered
+    this.panel_element.offsetHeight;
+    
+    this.panel_element.classList.add("is-visible");
     this.active_input.setAttribute("aria-expanded", "true");
+    
     document.addEventListener("mousedown", this.handle_document_mouse_down);
     document.addEventListener("keydown", this.handle_document_keydown);
     window.addEventListener("resize", this.handle_window_refresh);
     window.addEventListener("scroll", this.handle_window_refresh, true);
-    this.render();
-    this.position_panel();
+    
     this.notify_open("open");
   }
 
@@ -648,14 +752,33 @@ export class MangoPickerInstance {
     this.is_open = false;
     open_instances.delete(this);
     this.range_hover_date = null;
-    this.panel_element.hidden = true;
+    
+    this.panel_element.classList.remove("is-visible");
     this.active_input.setAttribute("aria-expanded", "false");
+    
     document.removeEventListener("mousedown", this.handle_document_mouse_down);
     document.removeEventListener("keydown", this.handle_document_keydown);
     window.removeEventListener("resize", this.handle_window_refresh);
     window.removeEventListener("scroll", this.handle_window_refresh, true);
+
+    // Return focus to active input if the focus was currently inside the panel
+    const active_element = document.activeElement;
+    if (active_element && this.panel_element.contains(active_element)) {
+      this.active_input.focus();
+    }
+
     this.reset_draft_state();
     this.notify_close("close");
+
+    // Hide panel completely after transition finishes
+    if (this.options.animation === "none") {
+      this.panel_element.hidden = true;
+    } else {
+      this.close_timeout_id = setTimeout(() => {
+        this.panel_element.hidden = true;
+        this.close_timeout_id = null;
+      }, 250); // Matches CSS transition duration
+    }
   }
 
   destroy() {
@@ -671,7 +794,18 @@ export class MangoPickerInstance {
     this.panel_element.removeEventListener("touchend", this.handle_panel_touch_end);
     this.panel_element.remove();
 
+    if (this.handle_input_change) {
+      this.source_input.removeEventListener("change", this.handle_input_change);
+      this.source_input.removeEventListener("input", this.handle_input_change);
+    }
+
     if (this.display_input) {
+      if (this.display_input.required) {
+        this.source_input.required = true;
+      }
+      if (this.display_input.id) {
+        this.source_input.id = this.display_input.id;
+      }
       this.display_input.remove();
 
       if (this.original_source_style === null) {
@@ -962,7 +1096,7 @@ export class MangoPickerInstance {
   }
 
   dispatch_custom_event(event_name, detail) {
-    const custom_event = create_custom_event(event_name, detail);
+    const custom_event = create_custom_event(event_name, detail, true);
 
     if (!custom_event) {
       return;
@@ -971,7 +1105,7 @@ export class MangoPickerInstance {
     this.source_input.dispatchEvent(custom_event);
 
     if (this.display_input) {
-      this.display_input.dispatchEvent(create_custom_event(event_name, detail));
+      this.display_input.dispatchEvent(create_custom_event(event_name, detail, false));
     }
   }
 
@@ -1098,8 +1232,9 @@ export class MangoPickerInstance {
   }
 
   navigate_button_group_focus(action_element, key_name, selector, column_count) {
-    const button_list = [...this.panel_element.querySelectorAll(selector)];
-    const current_index = button_list.indexOf(action_element);
+    const base_selector = selector.split(":")[0];
+    const all_buttons = [...this.panel_element.querySelectorAll(base_selector)];
+    const current_index = all_buttons.indexOf(action_element);
 
     if (current_index < 0) {
       return;
@@ -1111,11 +1246,29 @@ export class MangoPickerInstance {
       ArrowUp: -column_count,
       ArrowDown: column_count,
       Home: -current_index,
-      End: button_list.length - current_index - 1
+      End: all_buttons.length - current_index - 1
     };
-    const next_index = Math.max(0, Math.min(button_list.length - 1, current_index + (offset_map[key_name] || 0)));
+    const target_index = current_index + (offset_map[key_name] || 0);
 
-    button_list[next_index]?.focus();
+    if (target_index < 0 || target_index >= all_buttons.length) {
+      return;
+    }
+
+    const target_button = all_buttons[target_index];
+    if (target_button && !target_button.disabled) {
+      target_button.focus();
+    } else {
+      const direction = Math.sign(offset_map[key_name] || 1) || 1;
+      let check_index = target_index + direction;
+      while (check_index >= 0 && check_index < all_buttons.length) {
+        const candidate = all_buttons[check_index];
+        if (candidate && !candidate.disabled) {
+          candidate.focus();
+          break;
+        }
+        check_index += direction;
+      }
+    }
   }
 
   navigate_time_focus(action_element, key_name) {
@@ -1337,7 +1490,7 @@ export class MangoPickerInstance {
     this.selected_dates = this.normalize_selected_dates(next_dates);
     this.sync_time_range_values_from_selected_dates();
     this.range_hover_date = null;
-    this.view_date = clone_date(this.selected_dates[this.selected_dates.length - 1]) || clone_date(this.view_date) || new Date();
+    this.view_date = clone_date(this.view_date) || clone_date(this.selected_dates[this.selected_dates.length - 1]) || new Date();
     this.sync_time_cursor_from_date(this.get_primary_selected_date());
     this.reset_draft_state();
     this.refresh_input_value();
@@ -2286,6 +2439,28 @@ export class MangoPickerInstance {
   render() {
     this.language = resolve_language(this.options.language);
     this.has_rendered = true;
+
+    // Remember what was focused if it is inside this panel
+    const active_element = document.activeElement;
+    let focus_identifier = null;
+    if (active_element && this.panel_element.contains(active_element)) {
+      if (active_element.dataset.action) {
+        focus_identifier = {
+          action: active_element.dataset.action,
+          step: active_element.dataset.step,
+          view: active_element.dataset.view,
+          year: active_element.dataset.year,
+          month: active_element.dataset.month,
+          day: active_element.dataset.day,
+          hour: active_element.dataset.hour,
+          minute: active_element.dataset.minute,
+          second: active_element.dataset.second,
+          period: active_element.dataset.period,
+          rangeTarget: active_element.dataset.rangeTarget
+        };
+      }
+    }
+
     this.panel_element.innerHTML = `
       <div class="mango-picker__surface">
         ${this.get_header_markup()}
@@ -2293,6 +2468,24 @@ export class MangoPickerInstance {
         ${this.get_footer_markup()}
       </div>
     `;
+
+    // Restore focus if needed
+    if (focus_identifier) {
+      let selector = `[data-action="${focus_identifier.action}"]`;
+      if (focus_identifier.step) selector += `[data-step="${focus_identifier.step}"]`;
+      if (focus_identifier.view) selector += `[data-view="${focus_identifier.view}"]`;
+      if (focus_identifier.year) selector += `[data-year="${focus_identifier.year}"]`;
+      if (focus_identifier.month) selector += `[data-month="${focus_identifier.month}"]`;
+      if (focus_identifier.day) selector += `[data-day="${focus_identifier.day}"]`;
+      if (focus_identifier.hour) selector += `[data-hour="${focus_identifier.hour}"]`;
+      if (focus_identifier.minute) selector += `[data-minute="${focus_identifier.minute}"]`;
+      if (focus_identifier.second) selector += `[data-second="${focus_identifier.second}"]`;
+      if (focus_identifier.period) selector += `[data-period="${focus_identifier.period}"]`;
+      if (focus_identifier.rangeTarget) selector += `[data-range-target="${focus_identifier.rangeTarget}"]`;
+
+      const element_to_focus = this.panel_element.querySelector(selector);
+      element_to_focus?.focus();
+    }
 
     if (this.is_open) {
       this.position_panel();

@@ -1,4 +1,4 @@
-﻿# mangoPicker
+# mangoPicker
 
 `mangoPicker` คือ Date Time Picker แบบ vanilla JS/CSS ที่เอาไปใช้กับหน้าเว็บได้ง่าย ไม่ต้องพึ่ง framework และใช้ไฟล์ build จากโฟลเดอร์ `dist/` ได้ทันที
 
@@ -360,6 +360,7 @@ window.mangoPicker.init({
 | `data-mangopicker-disable-past` | `disable_past` | `true` |
 | `data-mangopicker-swipe-navigation` | `swipe_navigation` | `true` |
 | `data-mangopicker-keyboard-navigation` | `keyboard_navigation` | `true` |
+| `data-mangopicker-animation` | `animation` | `scale` |
 | `data-mangopicker-min-date` | `min_date` | `2026-01-01` |
 | `data-mangopicker-max-date` | `max_date` | `2026-12-31` |
 | `data-mangopicker-enabled-dates` | `enabled_dates` | `2026-04-01,2026-04-02` |
@@ -544,6 +545,7 @@ picker.get_instance(1);
 | `disable_past` | `false` | ปิดวันที่ก่อนวันนี้ | `disable_past: true` |
 | `swipe_navigation` | `true` | ปัดซ้าย/ขวาบนมือถือเพื่อเปลี่ยนเดือนหรือปี | `swipe_navigation: false` |
 | `keyboard_navigation` | `true` | ใช้ arrow keys, Enter, Esc ใน picker | `keyboard_navigation: false` |
+| `animation` | `"slide"` | รูปแบบอนิเมชันตอนเปิด-ปิด (`slide`, `scale`, `fade`, `none`) | `animation: "scale"` |
 | `min_date` | `null` | วันที่ต่ำสุดที่เลือกได้ | `min_date: "2026-01-01"` |
 | `max_date` | `null` | วันที่สูงสุดที่เลือกได้ | `max_date: "2026-12-31"` |
 | `enabled_dates` | `[]` | รายการวันที่อนุญาตให้เลือกเท่านั้น | `enabled_dates: ["2026-04-01"]` |

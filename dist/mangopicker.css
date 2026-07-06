@@ -35,6 +35,51 @@
   font-size: 0.875rem;
   line-height: 1.4;
   color: var(--mango-picker-text);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 250ms cubic-bezier(0.16, 1, 0.3, 1), transform 250ms cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+.mango-picker.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+.mango-picker[data-animation=slide] {
+  transform: translateY(8px);
+}
+.mango-picker[data-animation=slide].is-top {
+  transform: translateY(-8px);
+}
+.mango-picker[data-animation=slide].is-visible {
+  transform: translateY(0);
+}
+.mango-picker[data-animation=scale] {
+  transform: scale(0.96);
+  transform-origin: top center;
+}
+.mango-picker[data-animation=scale].is-top {
+  transform-origin: bottom center;
+}
+.mango-picker[data-animation=scale].is-visible {
+  transform: scale(1);
+}
+.mango-picker[data-animation=fade] {
+  transform: none;
+}
+.mango-picker[data-animation=fade].is-visible {
+  transform: none;
+}
+.mango-picker[data-animation=none] {
+  transition: none;
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.mango-picker[data-animation=none].is-visible {
+  transition: none;
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
 }
 .mango-picker.is-inline {
   position: static;
@@ -42,6 +87,10 @@
   z-index: auto;
   width: 100%;
   margin-top: 0.5rem;
+  opacity: 1;
+  pointer-events: auto;
+  transform: none !important;
+  transition: none !important;
 }
 .mango-picker__surface {
   width: 100%;

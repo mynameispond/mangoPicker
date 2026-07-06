@@ -31,6 +31,7 @@ export const default_options = {
   disable_past: false,
   swipe_navigation: true,
   keyboard_navigation: true,
+  animation: "slide",
   min_date: null,
   max_date: null,
   enabled_dates: [],
