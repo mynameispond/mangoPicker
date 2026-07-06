@@ -9,18 +9,18 @@ import {
 } from "./date_utils.js";
 import { parse_any_date_value } from "./format.js";
 
-function normalize_date_value(raw_value, fallback_format) {
-  const parsed_value = parse_any_date_value(raw_value, fallback_format);
+function normalize_date_value(raw_value, fallback_format, options = {}) {
+  const parsed_value = parse_any_date_value(raw_value, fallback_format, options);
   return parsed_value ? start_of_day(parsed_value) : null;
 }
 
-function normalize_date_list(date_list, fallback_format) {
+function normalize_date_list(date_list, fallback_format, options = {}) {
   return (date_list || [])
-    .map((date_value) => normalize_date_value(date_value, fallback_format))
+    .map((date_value) => normalize_date_value(date_value, fallback_format, options))
     .filter(Boolean);
 }
 
-function normalize_range_item(range_value, fallback_format) {
+function normalize_range_item(range_value, fallback_format, options = {}) {
   if (!range_value) {
     return null;
   }
@@ -35,8 +35,8 @@ function normalize_range_item(range_value, fallback_format) {
     end_value = range_value.end;
   }
 
-  const normalized_start = normalize_date_value(start_value, fallback_format);
-  const normalized_end = normalize_date_value(end_value, fallback_format);
+  const normalized_start = normalize_date_value(start_value, fallback_format, options);
+  const normalized_end = normalize_date_value(end_value, fallback_format, options);
 
   if (!normalized_start || !normalized_end) {
     return null;
@@ -49,9 +49,9 @@ function normalize_range_item(range_value, fallback_format) {
   return { start: normalized_end, end: normalized_start };
 }
 
-function normalize_range_list(range_list, fallback_format) {
+function normalize_range_list(range_list, fallback_format, options = {}) {
   return (range_list || [])
-    .map((range_value) => normalize_range_item(range_value, fallback_format))
+    .map((range_value) => normalize_range_item(range_value, fallback_format, options))
     .filter(Boolean);
 }
 
@@ -70,7 +70,7 @@ function has_enabled_rules(rules) {
 }
 
 function get_effective_min_date(options, fallback_format) {
-  const configured_min_date = normalize_date_value(options.min_date, fallback_format);
+  const configured_min_date = normalize_date_value(options.min_date, fallback_format, options);
 
   if (!options.disable_past) {
     return configured_min_date;
@@ -88,11 +88,11 @@ function get_effective_min_date(options, fallback_format) {
 export function normalize_availability_rules(options, fallback_format) {
   return {
     min_date: get_effective_min_date(options, fallback_format),
-    max_date: normalize_date_value(options.max_date, fallback_format),
-    enabled_dates: normalize_date_list(options.enabled_dates || options.allowed_dates, fallback_format),
-    disabled_dates: normalize_date_list(options.disabled_dates || options.closed_dates, fallback_format),
-    enabled_ranges: normalize_range_list(options.enabled_ranges || options.allowed_ranges, fallback_format),
-    disabled_ranges: normalize_range_list(options.disabled_ranges || options.closed_ranges, fallback_format),
+    max_date: normalize_date_value(options.max_date, fallback_format, options),
+    enabled_dates: normalize_date_list(options.enabled_dates || options.allowed_dates, fallback_format, options),
+    disabled_dates: normalize_date_list(options.disabled_dates || options.closed_dates, fallback_format, options),
+    enabled_ranges: normalize_range_list(options.enabled_ranges || options.allowed_ranges, fallback_format, options),
+    disabled_ranges: normalize_range_list(options.disabled_ranges || options.closed_ranges, fallback_format, options),
     enabled_date: typeof (options.enabled_date || options.allowed_date) === "function" ? options.enabled_date || options.allowed_date : null,
     disabled_date: typeof (options.disabled_date || options.closed_date) === "function"
       ? options.disabled_date || options.closed_date

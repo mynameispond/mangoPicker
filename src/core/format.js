@@ -331,7 +331,7 @@ export function split_range_values(raw_value, separator) {
     .slice(0, 2);
 }
 
-export function parse_any_date_value(raw_value, fallback_format = "Y-m-d") {
+export function parse_any_date_value(raw_value, fallback_format = "Y-m-d", options = {}) {
   if (raw_value === null || raw_value === undefined || raw_value === "") {
     return null;
   }
@@ -362,7 +362,7 @@ export function parse_any_date_value(raw_value, fallback_format = "Y-m-d") {
   ];
 
   for (const format_candidate of format_candidates) {
-    const parsed_value = parse_value_by_format(string_value, format_candidate);
+    const parsed_value = parse_value_by_format(string_value, format_candidate, options);
 
     if (parsed_value) {
       return parsed_value;
@@ -370,5 +370,12 @@ export function parse_any_date_value(raw_value, fallback_format = "Y-m-d") {
   }
 
   const native_date = new Date(string_value);
-  return is_valid_date_object(native_date) ? native_date : null;
+  if (is_valid_date_object(native_date)) {
+    if (options.buddha && native_date.getFullYear() >= 2400) {
+      native_date.setFullYear(native_date.getFullYear() - 543);
+    }
+    return native_date;
+  }
+
+  return null;
 }

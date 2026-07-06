@@ -394,7 +394,7 @@ var mangoPicker = (() => {
     }
     return normalized_value.split(safe_separator).map((value_part) => value_part.trim()).filter(Boolean).slice(0, 2);
   }
-  function parse_any_date_value(raw_value, fallback_format = "Y-m-d") {
+  function parse_any_date_value(raw_value, fallback_format = "Y-m-d", options = {}) {
     if (raw_value === null || raw_value === void 0 || raw_value === "") {
       return null;
     }
@@ -421,24 +421,30 @@ var mangoPicker = (() => {
       "h:i A"
     ];
     for (const format_candidate of format_candidates) {
-      const parsed_value = parse_value_by_format(string_value, format_candidate);
+      const parsed_value = parse_value_by_format(string_value, format_candidate, options);
       if (parsed_value) {
         return parsed_value;
       }
     }
     const native_date = new Date(string_value);
-    return is_valid_date_object(native_date) ? native_date : null;
+    if (is_valid_date_object(native_date)) {
+      if (options.buddha && native_date.getFullYear() >= 2400) {
+        native_date.setFullYear(native_date.getFullYear() - 543);
+      }
+      return native_date;
+    }
+    return null;
   }
 
   // src/core/availability.js
-  function normalize_date_value(raw_value, fallback_format) {
-    const parsed_value = parse_any_date_value(raw_value, fallback_format);
+  function normalize_date_value(raw_value, fallback_format, options = {}) {
+    const parsed_value = parse_any_date_value(raw_value, fallback_format, options);
     return parsed_value ? start_of_day(parsed_value) : null;
   }
-  function normalize_date_list(date_list, fallback_format) {
-    return (date_list || []).map((date_value) => normalize_date_value(date_value, fallback_format)).filter(Boolean);
+  function normalize_date_list(date_list, fallback_format, options = {}) {
+    return (date_list || []).map((date_value) => normalize_date_value(date_value, fallback_format, options)).filter(Boolean);
   }
-  function normalize_range_item(range_value, fallback_format) {
+  function normalize_range_item(range_value, fallback_format, options = {}) {
     if (!range_value) {
       return null;
     }
@@ -450,8 +456,8 @@ var mangoPicker = (() => {
       start_value = range_value.start;
       end_value = range_value.end;
     }
-    const normalized_start = normalize_date_value(start_value, fallback_format);
-    const normalized_end = normalize_date_value(end_value, fallback_format);
+    const normalized_start = normalize_date_value(start_value, fallback_format, options);
+    const normalized_end = normalize_date_value(end_value, fallback_format, options);
     if (!normalized_start || !normalized_end) {
       return null;
     }
@@ -460,8 +466,8 @@ var mangoPicker = (() => {
     }
     return { start: normalized_end, end: normalized_start };
   }
-  function normalize_range_list(range_list, fallback_format) {
-    return (range_list || []).map((range_value) => normalize_range_item(range_value, fallback_format)).filter(Boolean);
+  function normalize_range_list(range_list, fallback_format, options = {}) {
+    return (range_list || []).map((range_value) => normalize_range_item(range_value, fallback_format, options)).filter(Boolean);
   }
   function matches_date_list(date_value, date_list) {
     return date_list.some((candidate_date) => same_day(date_value, candidate_date));
@@ -475,7 +481,7 @@ var mangoPicker = (() => {
     return Boolean(rules.enabled_dates.length || rules.enabled_ranges.length || typeof rules.enabled_date === "function");
   }
   function get_effective_min_date(options, fallback_format) {
-    const configured_min_date = normalize_date_value(options.min_date, fallback_format);
+    const configured_min_date = normalize_date_value(options.min_date, fallback_format, options);
     if (!options.disable_past) {
       return configured_min_date;
     }
@@ -488,11 +494,11 @@ var mangoPicker = (() => {
   function normalize_availability_rules(options, fallback_format) {
     return {
       min_date: get_effective_min_date(options, fallback_format),
-      max_date: normalize_date_value(options.max_date, fallback_format),
-      enabled_dates: normalize_date_list(options.enabled_dates || options.allowed_dates, fallback_format),
-      disabled_dates: normalize_date_list(options.disabled_dates || options.closed_dates, fallback_format),
-      enabled_ranges: normalize_range_list(options.enabled_ranges || options.allowed_ranges, fallback_format),
-      disabled_ranges: normalize_range_list(options.disabled_ranges || options.closed_ranges, fallback_format),
+      max_date: normalize_date_value(options.max_date, fallback_format, options),
+      enabled_dates: normalize_date_list(options.enabled_dates || options.allowed_dates, fallback_format, options),
+      disabled_dates: normalize_date_list(options.disabled_dates || options.closed_dates, fallback_format, options),
+      enabled_ranges: normalize_range_list(options.enabled_ranges || options.allowed_ranges, fallback_format, options),
+      disabled_ranges: normalize_range_list(options.disabled_ranges || options.closed_ranges, fallback_format, options),
       enabled_date: typeof (options.enabled_date || options.allowed_date) === "function" ? options.enabled_date || options.allowed_date : null,
       disabled_date: typeof (options.disabled_date || options.closed_date) === "function" ? options.disabled_date || options.closed_date : null,
       disabled_weekdays: [...options.disabled_weekdays || []]
@@ -977,7 +983,12 @@ var mangoPicker = (() => {
       if (parsed_by_format) {
         return parsed_by_format;
       }
-      return parse_any_date_value(input_value, this.options.format);
+      return parse_any_date_value(input_value, this.options.format, {
+        buddha: this.options.buddha,
+        default_hour: this.options.default_hour,
+        default_minute: this.options.default_minute,
+        default_second: this.options.default_second
+      });
     }
     get_selection_key(date_value) {
       return format_date_value(date_value, this.options.format);

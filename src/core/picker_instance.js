@@ -404,7 +404,12 @@ export class MangoPickerInstance {
       return parsed_by_format;
     }
 
-    return parse_any_date_value(input_value, this.options.format);
+    return parse_any_date_value(input_value, this.options.format, {
+      buddha: this.options.buddha,
+      default_hour: this.options.default_hour,
+      default_minute: this.options.default_minute,
+      default_second: this.options.default_second
+    });
   }
 
   get_selection_key(date_value) {
